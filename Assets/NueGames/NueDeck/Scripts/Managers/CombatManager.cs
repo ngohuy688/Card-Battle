@@ -309,6 +309,14 @@ namespace NueGames.NueDeck.Scripts.Managers
                 {
                     foreach (var allyBase in CurrentAlliesList)
                         allyBase.CharacterStats.ClearAllStatus();
+
+                    GameManager.PendingStageAdvanceAfterRewards = true;
+                    UIManager.CombatCanvas.gameObject.SetActive(false);
+                    UIManager.SetCanvas(UIManager.RewardCanvas, true, true);
+                    UIManager.RewardCanvas.PrepareCanvas();
+                    UIManager.RewardCanvas.BuildReward(RewardType.Gold);
+                    UIManager.RewardCanvas.BuildReward(RewardType.Card);
+                    return;
                 }
 
                 var winPanel = UIManager.CombatCanvas.CombatWinPanel.GetComponent<CombatWinPanel>();

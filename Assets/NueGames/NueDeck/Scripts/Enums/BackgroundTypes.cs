@@ -4,6 +4,7 @@
     {
         Profile1,
         Profile2,
-        Profile3
+        Profile3,
+        Profile4
     }
 }

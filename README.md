@@ -66,5 +66,6 @@ builds the visible nodes and connecting lines from the current stage graph at
 runtime, so the static buttons under `MapCanvas/EncounterParent` are cleared.
 Only the starting node or successors of the last completed node are selectable.
 After a regular encounter, its successors are unlocked; winning any boss node
-finishes the stage and uses the existing Continue button to advance to the next
-stage when one is configured.
+finishes the stage. A boss in a stage with a configured successor stage grants
+the standard Gold and Card rewards before the reward screen advances to the next
+stage; bosses in the last configured stage retain the game-ending win panel.

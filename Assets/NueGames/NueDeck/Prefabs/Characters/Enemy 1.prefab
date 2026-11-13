@@ -242,8 +242,8 @@ MonoBehaviour:
   idleAnimation: Idle
   attackAnimation: Attack
   hitAnimation: Die
-  healAnimation: Attack
-  deathAnimation: Start
+  healAnimation: Idle
+  deathAnimation: Die
 --- !u!1 &2299856362718612829
 GameObject:
   m_ObjectHideFlags: 0

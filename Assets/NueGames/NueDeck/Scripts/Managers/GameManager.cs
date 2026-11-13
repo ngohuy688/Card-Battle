@@ -26,6 +26,7 @@ namespace NueGames.NueDeck.Scripts.Managers
         public EncounterData EncounterData => encounterData;
         public GameplayData GameplayData => gameplayData;
         public PersistentGameplayData PersistentGameplayData { get; private set; }
+        public bool PendingStageAdvanceAfterRewards { get; set; }
         protected UIManager UIManager => UIManager.Instance;
         #endregion
         
@@ -55,6 +56,7 @@ namespace NueGames.NueDeck.Scripts.Managers
         public void InitGameplayData()
         { 
             PersistentGameplayData = new PersistentGameplayData(gameplayData);
+            PendingStageAdvanceAfterRewards = false;
             var startingNodeId = EncounterData.GetStartingMapNodeId(PersistentGameplayData.CurrentStageId);
             if (!string.IsNullOrEmpty(startingNodeId))
                 PersistentGameplayData.AvailableMapNodeIds.Add(startingNodeId);

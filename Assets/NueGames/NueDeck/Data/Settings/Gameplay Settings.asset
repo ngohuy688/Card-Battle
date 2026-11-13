@@ -19,6 +19,7 @@ MonoBehaviour:
   - {fileID: 2835035829204582327, guid: 89cbd3ca048bfe944b76f88ce374c041, type: 3}
   - {fileID: 2835035829204582327, guid: 91d1bf28bb667e447aea0ece5a1b388b, type: 3}
   - {fileID: 2835035829204582327, guid: 639254a897ce5cf4492802a08d9f4e2c, type: 3}
+  - {fileID: 2835035829204582327, guid: c558bf4c92169434d88748dd013b8a5b, type: 3}
   initalDeck: {fileID: 11400000, guid: 1f1db59d6dc1c1046b2ad72c336c615e, type: 2}
   maxCardOnHand: 10
   allCardsList:

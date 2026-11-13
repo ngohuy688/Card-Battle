@@ -70,6 +70,22 @@ namespace NueGames.NueDeck.Scripts.Utils
                 OpenMainMenuScene();
         }
 
+        public void ContinueAfterRewards()
+        {
+            if (GameManager.PendingStageAdvanceAfterRewards)
+            {
+                if (!GameManager.TryAdvanceToNextStage())
+                {
+                    Debug.LogError("Could not advance to the next stage after claiming the boss reward.", GameManager);
+                    return;
+                }
+
+                GameManager.PendingStageAdvanceAfterRewards = false;
+            }
+
+            OpenMapScene();
+        }
+
         public void OpenSelectionCanvas()
         {
             var selectionCanvas = UIManager.SelectionCanvas;

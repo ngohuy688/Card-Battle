@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using NueGames.NueDeck.Scripts.Data.Characters;
 using NueGames.NueDeck.Scripts.Data.Containers;
 using NueGames.NueDeck.Scripts.EnemyBehaviour;
@@ -94,11 +94,11 @@ namespace NueGames.NueDeck.Scripts.Characters
             
             var target = CombatManager.CurrentAlliesList.RandomItem();
             
-            var startPos = transform.position;
-            var endPos = target.transform.position;
+            // var startPos = transform.position;
+            // var endPos = target.transform.position;
 
-            var startRot = transform.localRotation;
-            var endRot = Quaternion.Euler(60, 0, 60);
+            // var startRot = transform.localRotation;
+            // var endRot = Quaternion.Euler(60, 0, 60);
             
             // yield return StartCoroutine(MoveToTargetRoutine(waitFrame, startPos, endPos, startRot, endRot, 5));
 

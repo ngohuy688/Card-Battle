@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Player 2
   m_EditorClassIdentifier: 
   characterID: player_example
-  characterName: Amiya3
+  characterName: Magalan
   characterDescription: Player Description
   maxHealth: 100
-  portrait: {fileID: 21300000, guid: 5d96e92afedb81844b829d26a064aab9, type: 3}
+  portrait: {fileID: 21300000, guid: 49955a498f5dca34d9c38a83cdb2ade2, type: 3}
