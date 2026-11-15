@@ -1,5 +1,7 @@
-﻿using NueGames.NueDeck.Scripts.Enums;
+﻿using NueGames.NueDeck.Scripts.Characters;
+using NueGames.NueDeck.Scripts.Enums;
 using NueGames.NueDeck.Scripts.Managers;
+using NueGames.NueDeck.Scripts.Relic;
 using UnityEngine;
 
 namespace NueGames.NueDeck.Scripts.Card.CardActions
@@ -15,9 +17,18 @@ namespace NueGames.NueDeck.Scripts.Card.CardActions
             
             if (!newTarget) return;
             
-            newTarget.CharacterStats.ApplyStatus(StatusType.Block,
-                Mathf.RoundToInt(actionParameters.Value + actionParameters.SelfCharacter.CharacterStats
-                    .StatusDict[StatusType.Dexterity].StatusValue));
+            var blockValue = actionParameters.Value + actionParameters.SelfCharacter.CharacterStats
+                .StatusDict[StatusType.Dexterity].StatusValue;
+            newTarget.CharacterStats.ApplyStatus(StatusType.Block, Mathf.RoundToInt(blockValue));
+            if (newTarget is AllyBase)
+                RelicEffectProcessor.Trigger(RelicCondition.OnBlockGained,
+                    new RelicEffectParameters
+                    {
+                        Value = blockValue,
+                        SourceCharacter = actionParameters.SelfCharacter,
+                        TargetCharacter = newTarget,
+                        CardData = actionParameters.CardData
+                    });
 
             if (FxManager != null) 
                 FxManager.PlayFx(newTarget.transform, FxType.Block);

@@ -216,12 +216,6 @@ namespace NueGames.NueDeck.Scripts.Data.Containers
         public List<EncounterMapNode> MapNodeList => mapNodeList;
     }
 
-    public enum EncounterMapNodeType
-    {
-        Encounter,
-        Boss
-    }
-
     [Serializable]
     public class EncounterMapNode
     {

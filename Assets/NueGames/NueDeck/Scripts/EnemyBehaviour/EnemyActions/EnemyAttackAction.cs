@@ -1,5 +1,7 @@
-﻿using NueGames.NueDeck.Scripts.Enums;
+﻿using NueGames.NueDeck.Scripts.Characters;
+using NueGames.NueDeck.Scripts.Enums;
 using NueGames.NueDeck.Scripts.Managers;
+using NueGames.NueDeck.Scripts.Relic;
 using UnityEngine;
 
 namespace NueGames.NueDeck.Scripts.EnemyBehaviour.EnemyActions
@@ -15,6 +17,14 @@ namespace NueGames.NueDeck.Scripts.EnemyBehaviour.EnemyActions
                                          actionParameters.SelfCharacter.CharacterStats.StatusDict[StatusType.Strength]
                                              .StatusValue);
             actionParameters.TargetCharacter.CharacterStats.Damage(value);
+            if (actionParameters.TargetCharacter is AllyBase)
+                RelicEffectProcessor.Trigger(RelicCondition.OnDamageTaken,
+                    new RelicEffectParameters
+                    {
+                        Value = value,
+                        SourceCharacter = actionParameters.SelfCharacter,
+                        TargetCharacter = actionParameters.TargetCharacter
+                    });
             if (FxManager != null)
             {
                 FxManager.PlayFx(actionParameters.TargetCharacter.transform,FxType.Attack);

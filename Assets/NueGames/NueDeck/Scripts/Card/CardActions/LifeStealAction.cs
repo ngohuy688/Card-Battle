@@ -1,5 +1,7 @@
-﻿using NueGames.NueDeck.Scripts.Enums;
+﻿using NueGames.NueDeck.Scripts.Characters;
+using NueGames.NueDeck.Scripts.Enums;
 using NueGames.NueDeck.Scripts.Managers;
+using NueGames.NueDeck.Scripts.Relic;
 using UnityEngine;
 
 namespace NueGames.NueDeck.Scripts.Card.CardActions
@@ -11,11 +13,44 @@ namespace NueGames.NueDeck.Scripts.Card.CardActions
         {
             if (!actionParameters.TargetCharacter) return;
 
-            var value = Mathf.RoundToInt(actionParameters.Value +
-                                         actionParameters.SelfCharacter.CharacterStats.StatusDict[StatusType.Strength]
-                                             .StatusValue);
-            actionParameters.TargetCharacter.CharacterStats.Damage(value);
-            actionParameters.SelfCharacter.CharacterStats.Heal(value);
+            var value = actionParameters.Value +
+                        actionParameters.SelfCharacter.CharacterStats.StatusDict[StatusType.Strength].StatusValue;
+            if (actionParameters.SelfCharacter is AllyBase)
+            {
+                var damageParameters = new RelicEffectParameters
+                {
+                    Value = value,
+                    SourceCharacter = actionParameters.SelfCharacter,
+                    TargetCharacter = actionParameters.TargetCharacter,
+                    CardData = actionParameters.CardData
+                };
+                RelicEffectProcessor.Trigger(RelicCondition.OnDamageDealt, damageParameters);
+                value = damageParameters.Value;
+            }
+
+            var roundedValue = Mathf.RoundToInt(value);
+            actionParameters.TargetCharacter.CharacterStats.Damage(roundedValue);
+            if (actionParameters.TargetCharacter is AllyBase)
+                RelicEffectProcessor.Trigger(RelicCondition.OnDamageTaken,
+                    new RelicEffectParameters
+                    {
+                        Value = value,
+                        SourceCharacter = actionParameters.SelfCharacter,
+                        TargetCharacter = actionParameters.TargetCharacter,
+                        CardData = actionParameters.CardData
+                    });
+            var previousHealth = actionParameters.SelfCharacter.CharacterStats.CurrentHealth;
+            actionParameters.SelfCharacter.CharacterStats.Heal(roundedValue);
+            var restoredHealth = actionParameters.SelfCharacter.CharacterStats.CurrentHealth - previousHealth;
+            if (restoredHealth > 0 && actionParameters.SelfCharacter is AllyBase)
+                RelicEffectProcessor.Trigger(RelicCondition.OnHealthRestored,
+                    new RelicEffectParameters
+                    {
+                        Value = restoredHealth,
+                        SourceCharacter = actionParameters.SelfCharacter,
+                        TargetCharacter = actionParameters.SelfCharacter,
+                        CardData = actionParameters.CardData
+                    });
             
             if (FxManager != null)
             {

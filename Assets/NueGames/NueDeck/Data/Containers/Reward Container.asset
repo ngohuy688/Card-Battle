@@ -16,3 +16,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6cecd2669f04dbf40be0053e0a29c0c5, type: 2}
   goldRewardDataList:
   - {fileID: 11400000, guid: bef18396ce6d1a94489b81eacda6328e, type: 2}
+  relicRewardDataList:
+  - {fileID: 11400000, guid: 44af6313af0c43e49a74f2eaf3cfc12a, type: 2}

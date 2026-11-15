@@ -279,7 +279,7 @@ namespace NueGames.NueDeck.Scripts.Collection
 
                 var cardActions = _heldCard.CardData.CardActionDataList;
                 if (cardActions != null && cardActions.Count > 0)
-                    CombatManager.HighlightCardTarget(cardActions[0].ActionTargetType);
+                    CombatManager.HighlightCardTarget(cardActions[0].TargetType);
 
                 //if (!canSelectCards || cardTransform.position.y <= transform.position.y + 0.5f) {
                 if (!GameManager.PersistentGameplayData.CanSelectCards || _mouseInsideHand)
@@ -348,9 +348,9 @@ namespace NueGames.NueDeck.Scripts.Collection
 
                 if (character != null)
                 {
-                    var checkEnemy = (cardActions[0].ActionTargetType == ActionTargetType.Enemy &&
+                    var checkEnemy = (cardActions[0].TargetType == TargetType.Enemy &&
                                       character.GetCharacterType() == CharacterType.Enemy);
-                    var checkAlly = (cardActions[0].ActionTargetType == ActionTargetType.Ally &&
+                    var checkAlly = (cardActions[0].TargetType == TargetType.Ally &&
                                      character.GetCharacterType() == CharacterType.Ally);
 
                     if (checkEnemy || checkAlly)

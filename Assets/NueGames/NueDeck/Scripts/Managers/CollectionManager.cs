@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using NueGames.NueDeck.Scripts.Card;
 using NueGames.NueDeck.Scripts.Collection;
 using NueGames.NueDeck.Scripts.Data.Collection;
+using NueGames.NueDeck.Scripts.Enums;
+using NueGames.NueDeck.Scripts.Relic;
 using UnityEngine;
 
 namespace NueGames.NueDeck.Scripts.Managers
@@ -77,6 +79,8 @@ namespace NueGames.NueDeck.Scripts.Managers
                 HandController.AddCardToHand(clone);
                 HandPile.Add(randomCard);
                 DrawPile.Remove(randomCard);
+                RelicEffectProcessor.Trigger(RelicCondition.OnCardDrawn,
+                    new RelicEffectParameters { CardData = randomCard });
                 currentDrawCount++;
                 UIManager.CombatCanvas.SetPileTexts();
             }
@@ -96,6 +100,8 @@ namespace NueGames.NueDeck.Scripts.Managers
         {
             HandPile.Remove(targetCard.CardData);
             DiscardPile.Add(targetCard.CardData);
+            RelicEffectProcessor.Trigger(RelicCondition.OnCardDiscarded,
+                new RelicEffectParameters { CardData = targetCard.CardData });
             UIManager.CombatCanvas.SetPileTexts();
         }
         

@@ -26,6 +26,7 @@ namespace NueGames.NueDeck.Scripts.Data.Settings
         [SerializeField] private List<string> completedMapNodeIds;
         [SerializeField] private List<string> availableMapNodeIds;
         [SerializeField] private List<CardData> currentCardsList;
+        [SerializeField] private List<RelicData> currentRelicsList;
         [SerializeField] private List<AllyHealthData> allyHealthDataDataList;
 
         public PersistentGameplayData(GameplayData gameplayData)
@@ -68,6 +69,7 @@ namespace NueGames.NueDeck.Scripts.Data.Settings
             AvailableMapNodeIds = new List<string>();
             CurrentGold = 0;
             CurrentCardsList = new List<CardData>();
+            CurrentRelicsList = new List<RelicData>();
             IsFinalEncounter = false;
             allyHealthDataDataList = new List<AllyHealthData>();
         }
@@ -156,6 +158,12 @@ namespace NueGames.NueDeck.Scripts.Data.Settings
         {
             get => currentCardsList;
             set => currentCardsList = value;
+        }
+
+        public List<RelicData> CurrentRelicsList
+        {
+            get => currentRelicsList;
+            set => currentRelicsList = value;
         }
 
         public List<AllyHealthData> AllyHealthDataList

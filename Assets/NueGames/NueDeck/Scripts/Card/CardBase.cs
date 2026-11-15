@@ -6,6 +6,7 @@ using NueGames.NueDeck.Scripts.Data.Collection;
 using NueGames.NueDeck.Scripts.Enums;
 using NueGames.NueDeck.Scripts.Managers;
 using NueGames.NueDeck.Scripts.NueExtentions;
+using NueGames.NueDeck.Scripts.Relic;
 using NueGames.NueDeck.Scripts.Utils;
 using NueGames.NueDeck.ThirdParty.NueTooltip.Core;
 using NueGames.NueDeck.ThirdParty.NueTooltip.CursorSystem;
@@ -97,6 +98,13 @@ namespace NueGames.NueDeck.Scripts.Card
                         .DoAction(new CardActionParameters(playerAction.ActionValue,
                             target,self,CardData,this));
             }
+            RelicEffectProcessor.Trigger(RelicCondition.OnCardPlayed,
+                new RelicEffectParameters
+                {
+                    SourceCharacter = self,
+                    TargetCharacter = targetCharacter,
+                    CardData = CardData
+                });
             CollectionManager.OnCardPlayed(this);
         }
 
@@ -104,28 +112,28 @@ namespace NueGames.NueDeck.Scripts.Card
             CardActionData playerAction)
         {
             List<CharacterBase> targetList = new List<CharacterBase>();
-            switch (playerAction.ActionTargetType)
+            switch (playerAction.TargetType)
             {
-                case ActionTargetType.Enemy:
+                case TargetType.Enemy:
                     targetList.Add(targetCharacter);
                     break;
-                case ActionTargetType.Ally:
+                case TargetType.Ally:
                     targetList.Add(targetCharacter);
                     break;
-                case ActionTargetType.AllEnemies:
+                case TargetType.AllEnemies:
                     foreach (var enemyBase in allEnemies)
                         targetList.Add(enemyBase);
                     break;
-                case ActionTargetType.AllAllies:
+                case TargetType.AllAllies:
                     foreach (var allyBase in allAllies)
                         targetList.Add(allyBase);
                     break;
-                case ActionTargetType.RandomEnemy:
+                case TargetType.RandomEnemy:
                     if (allEnemies.Count>0)
                         targetList.Add(allEnemies.RandomItem());
                     
                     break;
-                case ActionTargetType.RandomAlly:
+                case TargetType.RandomAlly:
                     if (allAllies.Count>0)
                         targetList.Add(allAllies.RandomItem());
                     break;

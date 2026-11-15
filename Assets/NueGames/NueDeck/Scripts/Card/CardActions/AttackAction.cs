@@ -1,5 +1,7 @@
+using NueGames.NueDeck.Scripts.Characters;
 ﻿using NueGames.NueDeck.Scripts.Enums;
 using NueGames.NueDeck.Scripts.Managers;
+using NueGames.NueDeck.Scripts.Relic;
 using UnityEngine;
 
 namespace NueGames.NueDeck.Scripts.Card.CardActions
@@ -14,9 +16,30 @@ namespace NueGames.NueDeck.Scripts.Card.CardActions
             var targetCharacter = actionParameters.TargetCharacter;
             var selfCharacter = actionParameters.SelfCharacter;
             
-            var value = actionParameters.Value + selfCharacter.CharacterStats.StatusDict[StatusType.Strength].StatusValue; 
+            var value = actionParameters.Value + selfCharacter.CharacterStats.StatusDict[StatusType.Strength].StatusValue;
+            if (selfCharacter is AllyBase)
+            {
+                var damageParameters = new RelicEffectParameters
+                {
+                    Value = value,
+                    SourceCharacter = selfCharacter,
+                    TargetCharacter = targetCharacter,
+                    CardData = actionParameters.CardData
+                };
+                RelicEffectProcessor.Trigger(RelicCondition.OnDamageDealt, damageParameters);
+                value = damageParameters.Value;
+            }
             
             targetCharacter.CharacterStats.Damage(Mathf.RoundToInt(value));
+            if (targetCharacter is AllyBase)
+                RelicEffectProcessor.Trigger(RelicCondition.OnDamageTaken,
+                    new RelicEffectParameters
+                    {
+                        Value = value,
+                        SourceCharacter = selfCharacter,
+                        TargetCharacter = targetCharacter,
+                        CardData = actionParameters.CardData
+                    });
 
             if (FxManager != null)
             {

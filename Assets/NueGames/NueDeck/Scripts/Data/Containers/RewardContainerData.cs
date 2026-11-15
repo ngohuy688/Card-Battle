@@ -13,8 +13,10 @@ namespace NueGames.NueDeck.Scripts.Data.Containers
     {
         [SerializeField] private List<CardRewardData> cardRewardDataList;
         [SerializeField] private List<GoldRewardData> goldRewardDataList;
+        [SerializeField] private List<RelicRewardData> relicRewardDataList;
         public List<CardRewardData> CardRewardDataList => cardRewardDataList;
         public List<GoldRewardData> GoldRewardDataList => goldRewardDataList;
+        public List<RelicRewardData> RelicRewardDataList => relicRewardDataList;
 
         public List<CardData> GetRandomCardRewardList(out CardRewardData rewardData)
         {
@@ -34,7 +36,26 @@ namespace NueGames.NueDeck.Scripts.Data.Containers
 
             return value;
         } 
-       
+
+        public List<RelicData> GetRandomRelicRewardList(out RelicRewardData rewardData)
+        {
+            rewardData = null;
+            if (relicRewardDataList == null || relicRewardDataList.Count == 0)
+            {
+                Debug.LogError("No relic reward data is configured.", this);
+                return new List<RelicData>();
+            }
+
+            var availableRewards = relicRewardDataList.FindAll(x => x && x.RelicData != null && x.RelicData.Count > 0);
+            if (availableRewards.Count == 0)
+            {
+                Debug.LogError("Configured relic reward data contains no relics.", this);
+                return new List<RelicData>();
+            }
+
+            rewardData = availableRewards.RandomItem();
+            return new List<RelicData>(rewardData.RelicData);
+        }
     }
 
 }

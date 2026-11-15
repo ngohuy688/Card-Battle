@@ -4,6 +4,8 @@ using NueGames.NueDeck.Scripts.Data.Containers;
 using NueGames.NueDeck.Scripts.Data.Settings;
 using NueGames.NueDeck.Scripts.EnemyBehaviour;
 using NueGames.NueDeck.Scripts.NueExtentions;
+using NueGames.NueDeck.Scripts.Relic;
+using NueGames.NueDeck.Scripts.Enums;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -46,6 +48,7 @@ namespace NueGames.NueDeck.Scripts.Managers
                 DontDestroyOnLoad(gameObject);
                 CardActionProcessor.Initialize();
                 EnemyActionProcessor.Initialize();
+                RelicEffectProcessor.Initialize();
                 InitGameplayData();
                 SetInitalHand();
             }
@@ -62,7 +65,10 @@ namespace NueGames.NueDeck.Scripts.Managers
                 PersistentGameplayData.AvailableMapNodeIds.Add(startingNodeId);
 
             if (UIManager)
+            {
                 UIManager.InformationCanvas.ResetCanvas();
+                UIManager.InformationCanvas.SetRelicsText(PersistentGameplayData.CurrentRelicsList);
+            }
            
         } 
         public CardBase BuildAndGetCard(CardData targetData, Transform parent)

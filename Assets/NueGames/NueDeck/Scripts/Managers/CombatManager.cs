@@ -5,6 +5,7 @@ using NueGames.NueDeck.Scripts.Characters;
 using NueGames.NueDeck.Scripts.Characters.Enemies;
 using NueGames.NueDeck.Scripts.Data.Containers;
 using NueGames.NueDeck.Scripts.Enums;
+using NueGames.NueDeck.Scripts.Relic;
 using NueGames.NueDeck.Scripts.UI;
 using NueGames.NueDeck.Scripts.Utils.Background;
 using UnityEngine;
@@ -94,6 +95,7 @@ namespace NueGames.NueDeck.Scripts.Managers
             backgroundContainer.OpenSelectedBackground();
           
             CollectionManager.SetGameDeck();
+            RelicEffectProcessor.Trigger(RelicCondition.OnBattleStart);
            
             UIManager.CombatCanvas.gameObject.SetActive(true);
             UIManager.InformationCanvas.gameObject.SetActive(true);
@@ -117,6 +119,7 @@ namespace NueGames.NueDeck.Scripts.Managers
                     }
                     
                     GameManager.PersistentGameplayData.CurrentMana = GameManager.PersistentGameplayData.MaxMana;
+                    RelicEffectProcessor.Trigger(RelicCondition.OnTurnStart);
                    
                     CollectionManager.DrawCards(GameManager.PersistentGameplayData.DrawCount);
                     
@@ -148,6 +151,8 @@ namespace NueGames.NueDeck.Scripts.Managers
         #region Public Methods
         public void EndTurn()
         {
+            if (CurrentCombatStateType == CombatStateType.AllyTurn)
+                RelicEffectProcessor.Trigger(RelicCondition.OnTurnEnd);
             CurrentCombatStateType = CombatStateType.EnemyTurn;
         }
         public void OnAllyDeath(AllyBase targetAlly)
@@ -180,31 +185,31 @@ namespace NueGames.NueDeck.Scripts.Managers
             GameManager.PersistentGameplayData.CurrentMana += target;
             UIManager.CombatCanvas.SetPileTexts();
         }
-        public void HighlightCardTarget(ActionTargetType targetTypeTargetType)
+        public void HighlightCardTarget(TargetType targetTypeTargetType)
         {
             switch (targetTypeTargetType)
             {
-                case ActionTargetType.Enemy:
+                case TargetType.Enemy:
                     foreach (var currentEnemy in CurrentEnemiesList)
                         currentEnemy.EnemyCanvas.SetHighlight(true);
                     break;
-                case ActionTargetType.Ally:
+                case TargetType.Ally:
                     foreach (var currentAlly in CurrentAlliesList)
                         currentAlly.AllyCanvas.SetHighlight(true);
                     break;
-                case ActionTargetType.AllEnemies:
+                case TargetType.AllEnemies:
                     foreach (var currentEnemy in CurrentEnemiesList)
                         currentEnemy.EnemyCanvas.SetHighlight(true);
                     break;
-                case ActionTargetType.AllAllies:
+                case TargetType.AllAllies:
                     foreach (var currentAlly in CurrentAlliesList)
                         currentAlly.AllyCanvas.SetHighlight(true);
                     break;
-                case ActionTargetType.RandomEnemy:
+                case TargetType.RandomEnemy:
                     foreach (var currentEnemy in CurrentEnemiesList)
                         currentEnemy.EnemyCanvas.SetHighlight(true);
                     break;
-                case ActionTargetType.RandomAlly:
+                case TargetType.RandomAlly:
                     foreach (var currentAlly in CurrentAlliesList)
                         currentAlly.AllyCanvas.SetHighlight(true);
                     break;
@@ -274,6 +279,7 @@ namespace NueGames.NueDeck.Scripts.Managers
         {
             if (CurrentCombatStateType == CombatStateType.EndCombat) return;
             
+            RelicEffectProcessor.Trigger(RelicCondition.OnBattleEnd);
             CurrentCombatStateType = CombatStateType.EndCombat;
             
             CollectionManager.DiscardHand();
@@ -288,6 +294,7 @@ namespace NueGames.NueDeck.Scripts.Managers
         {
             if (CurrentCombatStateType == CombatStateType.EndCombat) return;
           
+            RelicEffectProcessor.Trigger(RelicCondition.OnBattleEnd);
             CurrentCombatStateType = CombatStateType.EndCombat;
            
             foreach (var allyBase in CurrentAlliesList)
@@ -316,6 +323,7 @@ namespace NueGames.NueDeck.Scripts.Managers
                     UIManager.RewardCanvas.PrepareCanvas();
                     UIManager.RewardCanvas.BuildReward(RewardType.Gold);
                     UIManager.RewardCanvas.BuildReward(RewardType.Card);
+                    UIManager.RewardCanvas.BuildReward(RewardType.Relic);
                     return;
                 }
 

@@ -310,7 +310,7 @@ namespace NueGames.NueDeck.Editor
 
                     if (newActionType != CardActionType.Exhaust)
                     {
-                        var newActionTarget = (ActionTargetType)EditorGUILayout.EnumPopup("Target Type",cardActionData.ActionTargetType,GUILayout.Width(250));
+                        var newActionTarget = (TargetType)EditorGUILayout.EnumPopup("Target Type",cardActionData.TargetType,GUILayout.Width(250));
                         var newActionValue = EditorGUILayout.FloatField("Action Value: ",cardActionData.ActionValue);
                         cardActionData.EditActionValue(newActionValue);
                         cardActionData.EditActionTarget(newActionTarget);

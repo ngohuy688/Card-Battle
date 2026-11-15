@@ -5,6 +5,7 @@ using NueGames.NueDeck.Scripts.Data.Collection;
 using NueGames.NueDeck.Scripts.Data.Containers;
 using NueGames.NueDeck.Scripts.Enums;
 using NueGames.NueDeck.Scripts.NueExtentions;
+using NueGames.NueDeck.Scripts.Relic;
 using UnityEngine;
 
 namespace NueGames.NueDeck.Scripts.UI.Reward
@@ -24,6 +25,7 @@ namespace NueGames.NueDeck.Scripts.UI.Reward
         private readonly List<RewardContainer> _currentRewardsList = new List<RewardContainer>();
         private readonly List<ChoiceCard> _spawnedChoiceList = new List<ChoiceCard>();
         private readonly List<CardData> _cardRewardList = new List<CardData>();
+        private readonly List<RewardContainer> _relicChoiceList = new List<RewardContainer>();
 
         public ChoicePanel ChoicePanel => choicePanel;
         
@@ -35,6 +37,12 @@ namespace NueGames.NueDeck.Scripts.UI.Reward
         }
         public void BuildReward(RewardType rewardType)
         {
+            if (rewardType == RewardType.Relic)
+            {
+                BuildRelicReward();
+                return;
+            }
+
             var rewardClone = Instantiate(rewardContainerPrefab, rewardRoot);
             _currentRewardsList.Add(rewardClone);
             
@@ -52,8 +60,6 @@ namespace NueGames.NueDeck.Scripts.UI.Reward
                         _cardRewardList.Add(cardData);
                     rewardClone.BuildReward(cardRewardData.RewardSprite,cardRewardData.RewardDescription);
                     rewardClone.RewardButton.onClick.AddListener(()=>GetCardReward(rewardClone,3));
-                    break;
-                case RewardType.Relic:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(rewardType), rewardType, null);
@@ -73,6 +79,7 @@ namespace NueGames.NueDeck.Scripts.UI.Reward
                 Destroy(rewardContainer.gameObject);
 
             _currentRewardsList?.Clear();
+            _relicChoiceList.Clear();
         }
 
         private void ResetChoice()
@@ -92,9 +99,57 @@ namespace NueGames.NueDeck.Scripts.UI.Reward
         private void GetGoldReward(RewardContainer rewardContainer,int amount)
         {
             GameManager.PersistentGameplayData.CurrentGold += amount;
+            RelicEffectProcessor.Trigger(RelicCondition.OnCoinGained,
+                new RelicEffectParameters { Value = amount });
             _currentRewardsList.Remove(rewardContainer);
             UIManager.InformationCanvas.SetGoldText(GameManager.PersistentGameplayData.CurrentGold);
             Destroy(rewardContainer.gameObject);
+        }
+
+        private void BuildRelicReward()
+        {
+            var relicChoices = rewardContainerData.GetRandomRelicRewardList(out _);
+            var ownedRelics = GameManager.PersistentGameplayData.CurrentRelicsList;
+            relicChoices.RemoveAll(relic => !relic ||
+                ownedRelics.Exists(owned => owned && owned.RelicId == relic.RelicId));
+
+            if (relicChoices.Count == 0)
+            {
+                Debug.LogWarning("No unowned relics are available for this reward.", rewardContainerData);
+                return;
+            }
+
+            foreach (var relic in relicChoices)
+            {
+                var rewardContainer = Instantiate(rewardContainerPrefab, rewardRoot);
+                _currentRewardsList.Add(rewardContainer);
+                _relicChoiceList.Add(rewardContainer);
+                rewardContainer.BuildReward(
+                    relic.RelicSprite,
+                    $"{relic.RelicName}\n{relic.RelicDescription}");
+                rewardContainer.RewardButton.onClick.AddListener(() => GetRelicReward(relic));
+            }
+        }
+
+        private void GetRelicReward(RelicData relicData)
+        {
+            if (!relicData)
+                return;
+
+            if (!RelicEffectProcessor.GrantRelic(relicData))
+            {
+                Debug.LogWarning($"Relic '{relicData.RelicName}' could not be added.", relicData);
+                return;
+            }
+
+            foreach (var relicChoice in _relicChoiceList)
+            {
+                _currentRewardsList.Remove(relicChoice);
+                if (relicChoice)
+                    Destroy(relicChoice.gameObject);
+            }
+
+            _relicChoiceList.Clear();
         }
 
         private void GetCardReward(RewardContainer rewardContainer,int amount = 3)
