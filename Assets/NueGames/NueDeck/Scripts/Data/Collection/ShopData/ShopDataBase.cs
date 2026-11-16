@@ -5,11 +5,6 @@ namespace NueGames.NueDeck.Scripts.Data.Collection
     public class ShopDataBase : ScriptableObject
     {
         [SerializeField] private int goldCost;
-        [SerializeField] private int cardCost;
-        [SerializeField] private int relicCost;
-
         public int GoldCost => goldCost;
-        public int CardCost => cardCost;
-        public int RelicCost => relicCost;
     }
 }

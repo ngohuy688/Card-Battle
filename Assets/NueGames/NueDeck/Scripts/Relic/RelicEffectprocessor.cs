@@ -70,8 +70,8 @@ namespace NueGames.NueDeck.Scripts.Relic
 
             ownedRelics.Add(relicData);
             TriggerRelic(relicData, RelicCondition.OnRelicEquipped, new RelicEffectParameters());
-            if (UIManager.Instance && UIManager.Instance.InformationCanvas)
-                UIManager.Instance.InformationCanvas.SetRelicsText(ownedRelics);
+            if (UIManager.Instance && UIManager.Instance.RelicCanvas)
+                UIManager.Instance.RelicCanvas.Refresh(ownedRelics);
             return true;
         }
 

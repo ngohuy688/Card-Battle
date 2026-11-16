@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b3788f664e773b438b0ddb9640de771, type: 3}
+  m_Name: Shop Container Data
+  m_EditorClassIdentifier: 
+  cardShopDataList:
+  - {fileID: 11400000, guid: 6925f5e8048d4c35b4d01f26ae7acd11, type: 2}
+  - {fileID: 11400000, guid: d12f7d88840345818af7c1504c172b53, type: 2}
+  - {fileID: 11400000, guid: 23863b4e14e243b4af6974c6a9a7f029, type: 2}
+  relicShopDataList:
+  - {fileID: 11400000, guid: 478c1e3ac19940dd8f46a63e6d5f9022, type: 2}
+  RefreshCost: 10
+  ShopCardSlotCount: 3
+  ShopRelicSlotCount: 1

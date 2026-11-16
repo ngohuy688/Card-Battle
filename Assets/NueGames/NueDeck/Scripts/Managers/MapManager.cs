@@ -3,6 +3,7 @@ using System.Linq;
 using NueGames.NueDeck.Scripts.Data.Containers;
 using NueGames.NueDeck.Scripts.Enums;
 using NueGames.NueDeck.Scripts.UI;
+using NueGames.NueDeck.Scripts.UI.Shop;
 using NueGames.NueDeck.Scripts.Utils;
 using UnityEngine;
 using UnityEngine.UI;
@@ -125,7 +126,7 @@ namespace NueGames.NueDeck.Scripts.Managers
             {
                 var nodeButton = Instantiate(encounterButtonPrefab, _nodeRoot);
                 var sceneChanger = nodeButton.GetComponent<SceneChanger>();
-                if (!sceneChanger)
+                if (mapNode.NodeType != EncounterMapNodeType.Shop && !sceneChanger)
                 {
                     Debug.LogError("An instantiated EncounterButton is missing SceneChanger.", nodeButton);
                     Destroy(nodeButton.gameObject);
@@ -133,9 +134,30 @@ namespace NueGames.NueDeck.Scripts.Managers
                 }
 
                 var nodeId = mapNode.NodeId;
-                nodeButton.Configure(mapNode.DisplayName, mapNode.NodeType == EncounterMapNodeType.Boss, () =>
+                nodeButton.Configure(mapNode.DisplayName, mapNode.NodeType, () =>
                 {
-                    if (GameManager.TrySelectMapNode(nodeId))
+                    if (mapNode.NodeType == EncounterMapNodeType.Shop &&
+                        (!UIManager || !UIManager.ShopCanvas))
+                    {
+                        Debug.LogError("UIManager has no ShopCanvas assigned.", UIManager);
+                        return;
+                    }
+
+                    if (!GameManager.TrySelectMapNode(nodeId))
+                        return;
+
+                    if (mapNode.NodeType == EncounterMapNodeType.Shop)
+                    {
+                        if (UIManager.CombatCanvas)
+                            UIManager.CombatCanvas.CloseCanvas();
+
+                        UIManager.ShopCanvas.OpenShop(mapNode.ShopContainerData, () =>
+                        {
+                            if (this)
+                                BuildMap();
+                        });
+                    }
+                    else
                         sceneChanger.OpenCombatScene();
                 });
 

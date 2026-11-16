@@ -116,14 +116,25 @@ namespace NueGames.NueDeck.Scripts.Data.Containers
                     return null;
                 }
 
-                var encounters = node.NodeType == EncounterMapNodeType.Boss
-                    ? stage.BossEncounterList
-                    : stage.EnemyEncounterList;
-                if (encounters == null || node.EncounterIndex < 0 || node.EncounterIndex >= encounters.Count)
+                if (node.NodeType == EncounterMapNodeType.Shop)
                 {
-                    Debug.LogError(
-                        $"Map node '{node.NodeId}' references an invalid encounter index for stage {stageId}.", this);
-                    return null;
+                    if (!node.ShopContainerData)
+                    {
+                        Debug.LogError($"Shop map node '{node.NodeId}' has no ShopContainerData assigned.", this);
+                        return null;
+                    }
+                }
+                else
+                {
+                    var encounters = node.NodeType == EncounterMapNodeType.Boss
+                        ? stage.BossEncounterList
+                        : stage.EnemyEncounterList;
+                    if (encounters == null || node.EncounterIndex < 0 || node.EncounterIndex >= encounters.Count)
+                    {
+                        Debug.LogError(
+                            $"Map node '{node.NodeId}' references an invalid encounter index for stage {stageId}.", this);
+                        return null;
+                    }
                 }
 
                 if (node.NextNodeIds == null)
@@ -170,6 +181,12 @@ namespace NueGames.NueDeck.Scripts.Data.Containers
             if (stage == null)
             {
                 Debug.LogError($"Stage ID {stageId} is not configured in EncounterData.", this);
+                return null;
+            }
+
+            if (mapNode.NodeType == EncounterMapNodeType.Shop)
+            {
+                Debug.LogError($"Shop node '{mapNode.NodeId}' does not contain an enemy encounter.", this);
                 return null;
             }
 
@@ -222,6 +239,7 @@ namespace NueGames.NueDeck.Scripts.Data.Containers
         [SerializeField] private string nodeId;
         [SerializeField] private string displayName;
         [SerializeField] private EncounterMapNodeType nodeType;
+        [SerializeField] private ShopContainerData shopContainerData;
         [SerializeField] private int encounterIndex;
         [SerializeField] private int roomNumber;
         [SerializeField] private Vector2 position;
@@ -230,6 +248,7 @@ namespace NueGames.NueDeck.Scripts.Data.Containers
         public string NodeId => nodeId;
         public string DisplayName => displayName;
         public EncounterMapNodeType NodeType => nodeType;
+        public ShopContainerData ShopContainerData => shopContainerData;
         public int EncounterIndex => encounterIndex;
         public int RoomNumber => roomNumber;
         public Vector2 Position => position;

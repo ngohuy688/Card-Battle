@@ -5,8 +5,6 @@ namespace NueGames.NueDeck.Scripts.Data.Collection
     public class RelicShopData : ShopDataBase
     {
         [SerializeField] private RelicData relicData;
-        [SerializeField] private int relicPrice;
         public RelicData RelicData => relicData;
-        public int RelicPrice => relicPrice;
     }
 }

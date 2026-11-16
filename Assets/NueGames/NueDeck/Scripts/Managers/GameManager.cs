@@ -65,10 +65,7 @@ namespace NueGames.NueDeck.Scripts.Managers
                 PersistentGameplayData.AvailableMapNodeIds.Add(startingNodeId);
 
             if (UIManager)
-            {
                 UIManager.InformationCanvas.ResetCanvas();
-                UIManager.InformationCanvas.SetRelicsText(PersistentGameplayData.CurrentRelicsList);
-            }
            
         } 
         public CardBase BuildAndGetCard(CardData targetData, Transform parent)
@@ -127,8 +124,18 @@ namespace NueGames.NueDeck.Scripts.Managers
 
             if (!EncounterData.TryGetMapNode(PersistentGameplayData.CurrentStageId, nodeId, out var node))
                 return false;
-            if (EncounterData.GetEnemyEncounter(PersistentGameplayData.CurrentStageId, node) == null)
+            if (node.NodeType == EncounterMapNodeType.Shop)
+            {
+                if (!node.ShopContainerData)
+                {
+                    Debug.LogError($"Shop node '{node.NodeId}' has no shop data.", EncounterData);
+                    return false;
+                }
+            }
+            else if (EncounterData.GetEnemyEncounter(PersistentGameplayData.CurrentStageId, node) == null)
+            {
                 return false;
+            }
 
             PersistentGameplayData.CurrentMapNodeId = node.NodeId;
             PersistentGameplayData.CurrentEncounterId = Mathf.Max(0, node.RoomNumber - 1);

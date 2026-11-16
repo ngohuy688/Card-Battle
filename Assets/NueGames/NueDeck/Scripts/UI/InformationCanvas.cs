@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using NueGames.NueDeck.Scripts.Data.Collection;
-using NueGames.NueDeck.Scripts.Managers;
+﻿using NueGames.NueDeck.Scripts.Managers;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace NueGames.NueDeck.Scripts.UI
 {
@@ -15,7 +13,7 @@ namespace NueGames.NueDeck.Scripts.UI
         [SerializeField] private TextMeshProUGUI goldTextField;
         [SerializeField] private TextMeshProUGUI nameTextField;
         [SerializeField] private TextMeshProUGUI healthTextField;
-        [SerializeField] private TextMeshProUGUI relicsTextField;
+        [SerializeField] private Button relicsButton;
 
         public GameObject RandomizedDeckObject => randomizedDeckObject;
         public TextMeshProUGUI RoomTextField => roomTextField;
@@ -27,6 +25,11 @@ namespace NueGames.NueDeck.Scripts.UI
         #region Setup
         private void Awake()
         {
+            if (!relicsButton)
+                Debug.LogError("InformationCanvas requires a relics button.", this);
+            else
+                relicsButton.onClick.AddListener(ToggleRelicPanel);
+
             ResetCanvas();
         }
         #endregion
@@ -41,32 +44,22 @@ namespace NueGames.NueDeck.Scripts.UI
 
         public void SetHealthText(int currentHealth,int maxHealth) => HealthTextField.text = $"{currentHealth}/{maxHealth}";
 
-        public void SetRelicsText(IList<RelicData> relics)
+        private void ToggleRelicPanel()
         {
-            if (!relicsTextField)
-                return;
-
-            var text = new StringBuilder("Relics: ");
-            var hasRelic = false;
-            if (relics != null)
+            if (!UIManager.Instance || !UIManager.Instance.RelicCanvas)
             {
-                foreach (var relic in relics)
-                {
-                    if (!relic)
-                        continue;
-
-                    if (hasRelic)
-                        text.Append(", ");
-                    text.Append(relic.RelicName);
-                    hasRelic = true;
-                }
+                Debug.LogError("Cannot open the relic canvas because it is not available.", this);
+                return;
             }
 
-            relicsTextField.text = hasRelic ? text.ToString() : "Relics: None";
+            UIManager.Instance.RelicCanvas.Toggle(GameManager.PersistentGameplayData.CurrentRelicsList);
         }
 
         public override void ResetCanvas()
         {
+            if (UIManager.Instance && UIManager.Instance.RelicCanvas)
+                UIManager.Instance.RelicCanvas.CloseCanvas();
+
             RandomizedDeckObject.SetActive(GameManager.PersistentGameplayData.IsRandomHand);
 
             var allyList = GameManager.PersistentGameplayData.AllyList;
@@ -92,7 +85,6 @@ namespace NueGames.NueDeck.Scripts.UI
 
             SetRoomText(GameManager.PersistentGameplayData.CurrentEncounterId+1,GameManager.GameplayData.UseStageSystem,GameManager.PersistentGameplayData.CurrentStageId+1);
             UIManager.InformationCanvas.SetGoldText(GameManager.PersistentGameplayData.CurrentGold);
-            SetRelicsText(GameManager.PersistentGameplayData.CurrentRelicsList);
         }
         #endregion
         

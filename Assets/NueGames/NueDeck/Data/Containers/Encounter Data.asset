@@ -45,6 +45,7 @@ MonoBehaviour:
     - nodeId: start
       displayName: Entry
       nodeType: 0
+      shopContainerData: {fileID: 0}
       encounterIndex: 0
       roomNumber: 1
       position: {x: 0.1, y: 0.5}
@@ -54,6 +55,7 @@ MonoBehaviour:
     - nodeId: north_route
       displayName: North Route
       nodeType: 0
+      shopContainerData: {fileID: 0}
       encounterIndex: 1
       roomNumber: 2
       position: {x: 0.32, y: 0.76}
@@ -61,7 +63,8 @@ MonoBehaviour:
       - crossroads
     - nodeId: south_route
       displayName: South Route
-      nodeType: 0
+      nodeType: 2
+      shopContainerData: {fileID: 11400000, guid: ba1d27464ca94104aec927073d0435e1, type: 2}
       encounterIndex: 1
       roomNumber: 2
       position: {x: 0.32, y: 0.24}
@@ -70,15 +73,26 @@ MonoBehaviour:
     - nodeId: crossroads
       displayName: Crossroads
       nodeType: 0
+      shopContainerData: {fileID: 0}
       encounterIndex: 2
       roomNumber: 3
       position: {x: 0.61, y: 0.5}
+      nextNodeIds:
+      - shop
+    - nodeId: shop
+      displayName: Shop
+      nodeType: 2
+      shopContainerData: {fileID: 11400000, guid: ba1d27464ca94104aec927073d0435e1, type: 2}
+      encounterIndex: 0
+      roomNumber: 4
+      position: {x: 0.75, y: 0.5}
       nextNodeIds:
       - north_boss
       - south_boss
     - nodeId: north_boss
       displayName: North Boss
       nodeType: 1
+      shopContainerData: {fileID: 0}
       encounterIndex: 0
       roomNumber: 4
       position: {x: 0.89, y: 0.76}
@@ -86,6 +100,7 @@ MonoBehaviour:
     - nodeId: south_boss
       displayName: South Boss
       nodeType: 1
+      shopContainerData: {fileID: 0}
       encounterIndex: 1
       roomNumber: 4
       position: {x: 0.89, y: 0.24}
@@ -121,6 +136,7 @@ MonoBehaviour:
     - nodeId: start
       displayName: Entry
       nodeType: 0
+      shopContainerData: {fileID: 0}
       encounterIndex: 0
       roomNumber: 1
       position: {x: 0.1, y: 0.5}
@@ -130,6 +146,7 @@ MonoBehaviour:
     - nodeId: north_route
       displayName: North Route
       nodeType: 0
+      shopContainerData: {fileID: 0}
       encounterIndex: 1
       roomNumber: 2
       position: {x: 0.32, y: 0.76}
@@ -138,6 +155,7 @@ MonoBehaviour:
     - nodeId: south_route
       displayName: South Route
       nodeType: 0
+      shopContainerData: {fileID: 0}
       encounterIndex: 1
       roomNumber: 2
       position: {x: 0.32, y: 0.24}
@@ -146,15 +164,28 @@ MonoBehaviour:
     - nodeId: crossroads
       displayName: Crossroads
       nodeType: 0
+      shopContainerData: {fileID: 0}
       encounterIndex: 2
       roomNumber: 3
       position: {x: 0.61, y: 0.5}
+      nextNodeIds:
+      - shop
+      - north_boss
+      - south_boss
+    - nodeId: shop
+      displayName: Shop
+      nodeType: 2
+      shopContainerData: {fileID: 11400000, guid: ba1d27464ca94104aec927073d0435e1, type: 2}
+      encounterIndex: 0
+      roomNumber: 4
+      position: {x: 0.75, y: 0.5}
       nextNodeIds:
       - north_boss
       - south_boss
     - nodeId: north_boss
       displayName: North Boss
       nodeType: 1
+      shopContainerData: {fileID: 0}
       encounterIndex: 0
       roomNumber: 4
       position: {x: 0.89, y: 0.76}
@@ -162,6 +193,7 @@ MonoBehaviour:
     - nodeId: south_boss
       displayName: South Boss
       nodeType: 1
+      shopContainerData: {fileID: 0}
       encounterIndex: 1
       roomNumber: 4
       position: {x: 0.89, y: 0.24}

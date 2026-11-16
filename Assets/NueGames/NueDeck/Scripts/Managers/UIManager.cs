@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NueGames.NueDeck.Scripts.Data.Collection;
 using NueGames.NueDeck.Scripts.UI;
 using NueGames.NueDeck.Scripts.UI.Reward;
+using NueGames.NueDeck.Scripts.UI.Shop;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,6 +20,8 @@ namespace NueGames.NueDeck.Scripts.Managers
         [SerializeField] private InformationCanvas informationCanvas;
         [SerializeField] private RewardCanvas rewardCanvas;
         [SerializeField] private InventoryCanvas inventoryCanvas;
+        [SerializeField] private RelicCanvas relicCanvas;
+        [SerializeField] private ShopCanvas shopCanvas;
         [SerializeField] private SelectionCanvas selectionCanvas;
 
         [Header("Fader")]
@@ -31,6 +34,8 @@ namespace NueGames.NueDeck.Scripts.Managers
         public InformationCanvas InformationCanvas => informationCanvas;
         public RewardCanvas RewardCanvas => rewardCanvas;
         public InventoryCanvas InventoryCanvas => inventoryCanvas;
+        public RelicCanvas RelicCanvas => relicCanvas;
+        public ShopCanvas ShopCanvas => shopCanvas ? shopCanvas : GetComponentInChildren<ShopCanvas>(true);
         public SelectionCanvas SelectionCanvas => selectionCanvas;
         #endregion
 

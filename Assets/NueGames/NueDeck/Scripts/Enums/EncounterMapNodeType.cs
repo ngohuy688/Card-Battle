@@ -4,6 +4,6 @@ namespace NueGames.NueDeck.Scripts.Enums
     {
         Encounter,
         Boss,
-        shop
+        Shop
     }
 }
