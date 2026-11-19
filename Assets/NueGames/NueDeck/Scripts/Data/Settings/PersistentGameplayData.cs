@@ -29,6 +29,8 @@ namespace NueGames.NueDeck.Scripts.Data.Settings
         [SerializeField] private List<RelicData> currentRelicsList;
         [SerializeField] private List<AllyHealthData> allyHealthDataDataList;
 
+        private int manaCache = 0;
+
         public PersistentGameplayData(GameplayData gameplayData)
         {
             _gameplayData = gameplayData;
@@ -76,6 +78,11 @@ namespace NueGames.NueDeck.Scripts.Data.Settings
 
         #region Encapsulation
 
+        public int ManaCache
+        {
+            get => manaCache;
+            set => manaCache = value;
+        }
         public int DrawCount
         {
             get => drawCount;

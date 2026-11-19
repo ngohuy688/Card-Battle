@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NueGames.NueDeck.Scripts.Characters;
@@ -109,7 +109,6 @@ namespace NueGames.NueDeck.Scripts.Managers
                 case CombatStateType.PrepareCombat:
                     break;
                 case CombatStateType.AllyTurn:
-
                     OnAllyTurnStarted?.Invoke();
                     
                     if (CurrentMainAlly.CharacterStats.IsStunned)
@@ -117,14 +116,16 @@ namespace NueGames.NueDeck.Scripts.Managers
                         EndTurn();
                         return;
                     }
-                    
-                    GameManager.PersistentGameplayData.CurrentMana = GameManager.PersistentGameplayData.MaxMana;
+
                     RelicEffectProcessor.Trigger(RelicCondition.OnTurnStart);
                    
                     CollectionManager.DrawCards(GameManager.PersistentGameplayData.DrawCount);
                     
                     GameManager.PersistentGameplayData.CanSelectCards = true;
-                    
+                    GameManager.PersistentGameplayData.CurrentMana = GameManager.PersistentGameplayData.MaxMana + GameManager.PersistentGameplayData.ManaCache;
+                    ResetManaCache();
+                    if (UIManager && UIManager.CombatCanvas)
+                        UIManager.CombatCanvas.SetPileTexts();
                     break;
                 case CombatStateType.EnemyTurn:
 
@@ -135,7 +136,6 @@ namespace NueGames.NueDeck.Scripts.Managers
                     StartCoroutine(nameof(EnemyTurnRoutine));
                     
                     GameManager.PersistentGameplayData.CanSelectCards = false;
-                    
                     break;
                 case CombatStateType.EndCombat:
                     
@@ -182,8 +182,21 @@ namespace NueGames.NueDeck.Scripts.Managers
         }
         public void IncreaseMana(int target)
         {
+            GameManager.PersistentGameplayData.ManaCache += target;
             GameManager.PersistentGameplayData.CurrentMana += target;
-            UIManager.CombatCanvas.SetPileTexts();
+            if (UIManager && UIManager.CombatCanvas)
+                UIManager.CombatCanvas.SetPileTexts();
+        }
+        public void IncreaseMaxMana(int target)
+        {
+            GameManager.PersistentGameplayData.MaxMana += target;
+            GameManager.PersistentGameplayData.CurrentMana += target;
+            if (UIManager && UIManager.CombatCanvas)
+                UIManager.CombatCanvas.SetPileTexts();
+        }
+        public void ResetManaCache()
+        {
+            GameManager.PersistentGameplayData.ManaCache = 0;
         }
         public void HighlightCardTarget(TargetType targetTypeTargetType)
         {

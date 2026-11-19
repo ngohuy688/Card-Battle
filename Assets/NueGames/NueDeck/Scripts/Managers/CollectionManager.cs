@@ -57,9 +57,10 @@ namespace NueGames.NueDeck.Scripts.Managers
         {
             var currentDrawCount = 0;
 
+            var maxHand = GameManager.GameplayData.MaxCardOnHand + Relic.RelicEffect.IncreaseHandSizeEffect.GetHandSizeBonus();
             for (var i = 0; i < targetDrawCount; i++)
             {
-                if (GameManager.GameplayData.MaxCardOnHand<=HandPile.Count)
+                if (maxHand <= HandPile.Count)
                     return;
                 
                 if (DrawPile.Count <= 0)

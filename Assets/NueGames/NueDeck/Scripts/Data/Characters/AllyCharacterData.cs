@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+using System.Collections.Generic;
+using NueGames.NueDeck.Scripts.Data.Collection;
+using UnityEngine;
 
 namespace NueGames.NueDeck.Scripts.Data.Characters
 {
@@ -6,7 +8,9 @@ namespace NueGames.NueDeck.Scripts.Data.Characters
     public class AllyCharacterData : CharacterDataBase
     {
         [SerializeField] private Sprite portrait;
+        [SerializeField] private List<RelicData> startingRelics;
 
         public Sprite Portrait => portrait;
+        public List<RelicData> StartingRelics => startingRelics;
     }
 }

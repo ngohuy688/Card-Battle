@@ -64,9 +64,41 @@ namespace NueGames.NueDeck.Scripts.Managers
             if (!string.IsNullOrEmpty(startingNodeId))
                 PersistentGameplayData.AvailableMapNodeIds.Add(startingNodeId);
 
+            GrantStartingRelics();
+
             if (UIManager)
                 UIManager.InformationCanvas.ResetCanvas();
            
+        } 
+
+        public void GrantStartingRelics()
+        {
+            var ownedRelics = PersistentGameplayData?.CurrentRelicsList;
+            if (ownedRelics == null) return;
+
+            if (GameplayData && GameplayData.InitialRelics != null)
+            {
+                foreach (var relic in GameplayData.InitialRelics)
+                {
+                    if (relic && !ownedRelics.Exists(x => x && x.RelicId == relic.RelicId))
+                        RelicEffectProcessor.GrantRelic(relic);
+                }
+            }
+
+            if (PersistentGameplayData.AllyList != null)
+            {
+                foreach (var ally in PersistentGameplayData.AllyList)
+                {
+                    if (ally && ally.AllyCharacterData && ally.AllyCharacterData.StartingRelics != null)
+                    {
+                        foreach (var relic in ally.AllyCharacterData.StartingRelics)
+                        {
+                            if (relic && !ownedRelics.Exists(x => x && x.RelicId == relic.RelicId))
+                                RelicEffectProcessor.GrantRelic(relic);
+                        }
+                    }
+                }
+            }
         } 
         public CardBase BuildAndGetCard(CardData targetData, Transform parent)
         {

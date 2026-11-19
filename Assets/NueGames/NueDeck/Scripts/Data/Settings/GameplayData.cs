@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using NueGames.NueDeck.Scripts.Card;
 using NueGames.NueDeck.Scripts.Characters;
 using NueGames.NueDeck.Scripts.Data.Collection;
@@ -19,6 +19,9 @@ namespace NueGames.NueDeck.Scripts.Data.Settings
         [SerializeField] private DeckData initalDeck;
         [SerializeField] private int maxCardOnHand;
         
+        [Header("Relics")]
+        [SerializeField] private List<RelicData> initialRelics;
+
         [Header("Card Settings")] 
         [SerializeField] private List<CardData> allCardsList;
         [SerializeField] private CardBase cardPrefab;
@@ -38,6 +41,7 @@ namespace NueGames.NueDeck.Scripts.Data.Settings
         public List<AllyBase> InitalAllyList => initalAllyList;
         public List<AllyBase> AllyRoster => allyRoster;
         public DeckData InitalDeck => initalDeck;
+        public List<RelicData> InitialRelics => initialRelics;
         public int RandomCardCount => randomCardCount;
         public int MaxCardOnHand => maxCardOnHand;
         public List<CardData> AllCardsList => allCardsList;

@@ -16,8 +16,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6925f5e8048d4c35b4d01f26ae7acd11, type: 2}
   - {fileID: 11400000, guid: d12f7d88840345818af7c1504c172b53, type: 2}
   - {fileID: 11400000, guid: 23863b4e14e243b4af6974c6a9a7f029, type: 2}
+  - {fileID: 11400000, guid: 23863b4e14e243b4af6974c6a9a7f029, type: 2}
   relicShopDataList:
   - {fileID: 11400000, guid: 478c1e3ac19940dd8f46a63e6d5f9022, type: 2}
+  - {fileID: 11400000, guid: 9a6ed0b9dee5d334f9bf90919f7d80bb, type: 2}
   RefreshCost: 10
   ShopCardSlotCount: 3
-  ShopRelicSlotCount: 1
+  ShopRelicSlotCount: 3

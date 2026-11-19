@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NueGames.NueDeck.Scripts.Enums;
@@ -73,6 +73,9 @@ namespace NueGames.NueDeck.Scripts.Characters
             
             StatusDict[StatusType.Stun].DecreaseOverTurn = true;
             StatusDict[StatusType.Stun].OnTriggerAction += CheckStunStatus;
+
+            StatusDict[StatusType.Weak].DecreaseOverTurn = true;
+            StatusDict[StatusType.Vulnerable].DecreaseOverTurn = true;
             
         }
         #endregion
@@ -152,6 +155,7 @@ namespace NueGames.NueDeck.Scripts.Characters
         public void IncreaseMaxHealth(int value)
         {
             MaxHealth += value;
+            CurrentHealth += value;
             OnHealthChanged?.Invoke(CurrentHealth,MaxHealth);
         }
 

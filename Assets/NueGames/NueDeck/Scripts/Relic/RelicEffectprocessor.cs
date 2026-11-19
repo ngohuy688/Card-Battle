@@ -29,7 +29,7 @@ namespace NueGames.NueDeck.Scripts.Relic
                 if (effect != null)
                     RelicEffectDict.Add(effect.EffectType, effect);
             }
-    
+
             IsInitialized = true;
         }
 
@@ -49,11 +49,9 @@ namespace NueGames.NueDeck.Scripts.Relic
                 return false;
             }
 
-            if (!RelicEffectDict.ContainsKey(relicData.EffectType))
+            if (relicData.RelicEffectDatas == null || relicData.RelicEffectDatas.Count == 0)
             {
-                Debug.LogError(
-                    $"No relic effect is registered for '{relicData.EffectType}' ({relicData.name}).",
-                    relicData);
+                Debug.LogError($"Relic '{relicData.name}' has no effects configured.", relicData);
                 return false;
             }
 
@@ -65,13 +63,16 @@ namespace NueGames.NueDeck.Scripts.Relic
             if (ownedRelics == null)
                 throw new InvalidOperationException("The current relic collection is not initialized.");
 
-            if (ownedRelics.Exists(x => x && x.RelicId == relicData.RelicId))
+            if (relicData.IsUnique && ownedRelics.Exists(x => x && x.RelicId == relicData.RelicId))
                 return false;
 
             ownedRelics.Add(relicData);
             TriggerRelic(relicData, RelicCondition.OnRelicEquipped, new RelicEffectParameters());
             if (UIManager.Instance && UIManager.Instance.RelicCanvas)
                 UIManager.Instance.RelicCanvas.Refresh(ownedRelics);
+            if (UIManager.Instance && UIManager.Instance.InformationCanvas)
+                UIManager.Instance.InformationCanvas.ResetCanvas();
+            Debug.Log($"[Relic] Successfully granted relic '{relicData.RelicName}' (ID: {relicData.RelicId}) with {relicData.RelicEffectDatas.Count} effect(s).");
             return true;
         }
 
@@ -90,7 +91,7 @@ namespace NueGames.NueDeck.Scripts.Relic
             var relicSnapshot = new List<RelicData>(ownedRelics);
             foreach (var relicData in relicSnapshot)
             {
-                if (relicData && relicData.ConditionType == condition)
+                if (relicData)
                     TriggerRelic(relicData, condition, parameters);
             }
         }
@@ -100,22 +101,38 @@ namespace NueGames.NueDeck.Scripts.Relic
             RelicCondition condition,
             RelicEffectParameters parameters)
         {
-            if (relicData.ConditionType != condition)
+            if (relicData.RelicEffectDatas == null)
                 return;
-
-            if (!RelicEffectDict.TryGetValue(relicData.EffectType, out var effect))
-                throw new InvalidOperationException(
-                    $"No relic effect is registered for '{relicData.EffectType}' ({relicData.name}).");
 
             parameters = parameters ?? new RelicEffectParameters();
             parameters.RelicData = relicData;
-            effect.ApplyEffect(parameters);
+
+            foreach (var effectData in relicData.RelicEffectDatas)
+            {
+                if (effectData == null)
+                    continue;
+
+                // Chỉ kích hoạt effect nếu condition khớp
+                if (effectData.ConditionType != condition)
+                    continue;
+
+                if (!RelicEffectDict.TryGetValue(effectData.EffectType, out var effect))
+                {
+                    Debug.LogWarning(
+                        $"No relic effect registered for '{effectData.EffectType}' on relic '{relicData.name}'.");
+                    continue;
+                }
+
+                parameters.CurrentEffectData = effectData;
+                effect.ApplyEffect(parameters);
+                Debug.Log($"[Relic] Triggered effect '{effectData.EffectType}' on relic '{relicData.RelicName}' for condition '{condition}'.");
+            }
         }
 
         private static void EnsureInitialized()
         {
             if (!IsInitialized)
-                throw new InvalidOperationException("RelicEffectProcessor must be initialized before use.");
+                Initialize();
         }
     }
 }

@@ -17,6 +17,12 @@ namespace NueGames.NueDeck.Scripts.Card.CardActions
             var selfCharacter = actionParameters.SelfCharacter;
             
             var value = actionParameters.Value + selfCharacter.CharacterStats.StatusDict[StatusType.Strength].StatusValue;
+
+            if (selfCharacter.CharacterStats.StatusDict[StatusType.Weak].StatusValue > 0)
+                value = Mathf.RoundToInt(value * 0.75f);
+
+            if (targetCharacter.CharacterStats.StatusDict[StatusType.Vulnerable].StatusValue > 0)
+                value = Mathf.RoundToInt(value * 1.5f);
             if (selfCharacter is AllyBase)
             {
                 var damageParameters = new RelicEffectParameters

@@ -43,6 +43,7 @@ namespace NueGames.NueDeck.Scripts.Relic.RelicEffect
             }
 
             healthData.MaxHealth += value;
+            healthData.CurrentHealth += value;
         }
     }
 }

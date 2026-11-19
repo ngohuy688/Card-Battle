@@ -9,6 +9,8 @@ using NueGames.NueDeck.Scripts.UI.Reward;
 using UnityEngine;
 using UnityEngine.UI;
 
+using NueGames.NueDeck.Scripts.Relic.RelicEffect;
+
 namespace NueGames.NueDeck.Scripts.UI.Shop
 {
     public class ShopCanvas : CanvasBase
@@ -82,11 +84,11 @@ namespace NueGames.NueDeck.Scripts.UI.Shop
                 return;
             }
 
-            var ownedRelicIds = new HashSet<string>(ownedRelics
-                .Where(relic => relic && !string.IsNullOrWhiteSpace(relic.RelicId))
+            var ownedUniqueRelicIds = new HashSet<string>(ownedRelics
+                .Where(relic => relic && relic.IsUnique && !string.IsNullOrWhiteSpace(relic.RelicId))
                 .Select(relic => relic.RelicId));
             foreach (var relicOffer in _currentShop.GetRandomRelicOffers())
-                CreateRelicOffer(relicOffer, ownedRelicIds);
+                CreateRelicOffer(relicOffer, ownedUniqueRelicIds);
 
             UpdateOfferAvailability();
         }
@@ -101,11 +103,12 @@ namespace NueGames.NueDeck.Scripts.UI.Shop
 
             offer.CardData.UpdateDescription();
             var description = $"{offer.CardData.CardName}\n{offer.CardData.MyDescription}";
-            CreateOffer(offer.CardData.CardSprite, description, offer.GoldCost,
-                () => TryPurchaseCard(offer));
+            var cost = ShopDiscountEffect.GetDiscountedCost(offer.GoldCost);
+            CreateOffer(offer.CardData.CardSprite, description, cost,
+                () => TryPurchaseCard(offer, cost));
         }
 
-        private void CreateRelicOffer(RelicShopData offer, HashSet<string> offeredRelicIds)
+        private void CreateRelicOffer(RelicShopData offer, HashSet<string> ownedUniqueRelicIds)
         {
             if (!offer || !offer.RelicData || !offer.RelicData.RelicSprite ||
                 string.IsNullOrWhiteSpace(offer.RelicData.RelicId) || offer.GoldCost < 0)
@@ -114,12 +117,13 @@ namespace NueGames.NueDeck.Scripts.UI.Shop
                 return;
             }
 
-            if (!offeredRelicIds.Add(offer.RelicData.RelicId))
+            if (offer.RelicData.IsUnique && ownedUniqueRelicIds.Contains(offer.RelicData.RelicId))
                 return;
 
             var description = $"{offer.RelicData.RelicName}\n{offer.RelicData.RelicDescription}";
-            CreateOffer(offer.RelicData.RelicSprite, description, offer.GoldCost,
-                () => TryPurchaseRelic(offer));
+            var cost = ShopDiscountEffect.GetDiscountedCost(offer.GoldCost);
+            CreateOffer(offer.RelicData.RelicSprite, description, cost,
+                () => TryPurchaseRelic(offer, cost));
         }
 
         private void CreateOffer(Sprite sprite, string description, int cost, Func<bool> purchase)
@@ -130,10 +134,10 @@ namespace NueGames.NueDeck.Scripts.UI.Shop
             _activeOffers.Add(offer);
         }
 
-        private bool TryPurchaseCard(CardShopData offer)
+        private bool TryPurchaseCard(CardShopData offer, int cost)
         {
             var runData = GameManager.PersistentGameplayData;
-            if (runData.CurrentGold < offer.GoldCost)
+            if (runData.CurrentGold < cost)
                 return false;
 
             if (runData.CurrentCardsList == null)
@@ -142,23 +146,23 @@ namespace NueGames.NueDeck.Scripts.UI.Shop
                 return false;
             }
 
-            runData.CurrentGold -= offer.GoldCost;
+            runData.CurrentGold -= cost;
             runData.CurrentCardsList.Add(offer.CardData);
             UpdateGoldDisplay();
             UpdateOfferAvailability();
             return true;
         }
 
-        private bool TryPurchaseRelic(RelicShopData offer)
+        private bool TryPurchaseRelic(RelicShopData offer, int cost)
         {
             var runData = GameManager.PersistentGameplayData;
-            if (runData.CurrentGold < offer.GoldCost)
+            if (runData.CurrentGold < cost)
                 return false;
 
             if (!RelicEffectProcessor.GrantRelic(offer.RelicData))
                 return false;
 
-            runData.CurrentGold -= offer.GoldCost;
+            runData.CurrentGold -= cost;
             UpdateGoldDisplay();
             UpdateOfferAvailability();
             return true;

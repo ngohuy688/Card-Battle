@@ -105,6 +105,8 @@ namespace NueGames.NueDeck.Scripts.UI
             party.Clear();
             party.Add(selectedAlly);
 
+            GameManager.GrantStartingRelics();
+
             SelectionConfirmed?.Invoke(selectedAlly);
         }
 

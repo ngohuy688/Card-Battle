@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NueGames.NueDeck.Scripts.Characters;
@@ -164,7 +164,7 @@ namespace NueGames.NueDeck.Scripts.Card
         protected virtual void SpendMana(int value)
         {
             if (!IsPlayable) return;
-            GameManager.PersistentGameplayData.CurrentMana -= value;
+                GameManager.PersistentGameplayData.CurrentMana -= value;
         }
         
         public virtual void SetInactiveMaterialState(bool isInactive) 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using NueGames.NueDeck.Scripts.Data.Characters;
 using NueGames.NueDeck.Scripts.Interfaces;
 using NueGames.NueDeck.Scripts.Managers;
@@ -40,6 +40,8 @@ namespace NueGames.NueDeck.Scripts.Characters
             CharacterStats.OnDeath += OnDeath;
             CharacterStats.SetCurrentHealth(CharacterStats.CurrentHealth);
             
+            GameManager.GrantStartingRelics();
+
             if (CombatManager != null)
                 CombatManager.OnAllyTurnStarted += CharacterStats.TriggerAllStatus;
         }

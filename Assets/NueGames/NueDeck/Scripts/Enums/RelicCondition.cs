@@ -18,3 +18,4 @@ namespace NueGames.NueDeck.Scripts.Enums
         OnCoinGained
     }
 }
+

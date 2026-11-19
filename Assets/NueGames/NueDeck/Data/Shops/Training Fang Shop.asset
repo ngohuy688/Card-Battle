@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23608d0746eefc7459e1455147e4284c, type: 3}
   m_Name: Training Fang Shop
   m_EditorClassIdentifier: 
-  goldCost: 30
+  goldCost: 15
   relicData: {fileID: 11400000, guid: 4fe6217aaec442ec8931d38ee2c1f091, type: 2}

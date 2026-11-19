@@ -111,7 +111,7 @@ namespace NueGames.NueDeck.Scripts.UI.Reward
             var relicChoices = rewardContainerData.GetRandomRelicRewardList(out _);
             var ownedRelics = GameManager.PersistentGameplayData.CurrentRelicsList;
             relicChoices.RemoveAll(relic => !relic ||
-                ownedRelics.Exists(owned => owned && owned.RelicId == relic.RelicId));
+                (relic.IsUnique && ownedRelics.Exists(owned => owned && owned.RelicId == relic.RelicId)));
 
             if (relicChoices.Count == 0)
             {
