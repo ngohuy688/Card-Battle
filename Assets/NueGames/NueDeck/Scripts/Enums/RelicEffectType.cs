@@ -23,7 +23,7 @@ namespace NueGames.NueDeck.Scripts.Enums
         DrawCard,                // Rút bài, số bài = value.
         IncreaseHandSize,        // Tăng giới hạn số lá bài trên tay = value.
 
-        ApplyPoison,             // Gây Poison lên kẻ địch với số turn = value.
+        ApplyPoison,             // Gây Poison lên kẻ địch với số damage = value.
         ApplyWeak,               // Gây Weak lên kẻ địch với số turn = value.
         ApplyVulnerable,         // Gây Vulnerable lên kẻ địch với số turn = value.
         IncreaseDebuffDuration,  // Tăng thời gian tồn tại của hiệu ứng bất lợi với số turn = value.
