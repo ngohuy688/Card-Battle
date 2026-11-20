@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using NueGames.NueDeck.Scripts.Data.Containers;
+using NueGames.NueDeck.Scripts.UI.Reward;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
