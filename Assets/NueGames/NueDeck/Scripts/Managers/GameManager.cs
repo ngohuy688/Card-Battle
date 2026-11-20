@@ -13,129 +13,93 @@ namespace NueGames.NueDeck.Scripts.Managers
 {
     [DefaultExecutionOrder(-10)]
     public class GameManager : MonoBehaviour
-    { 
-        public GameManager(){}
+    {
+        public GameManager() { }
         public static GameManager Instance { get; private set; }
-        
+
         [Header("Settings")]
         [SerializeField] private GameplayData gameplayData;
         [SerializeField] private EncounterData encounterData;
         [SerializeField] private SceneData sceneData;
 
-
-        #region Cache
         public SceneData SceneData => sceneData;
         public EncounterData EncounterData => encounterData;
         public GameplayData GameplayData => gameplayData;
         public PersistentGameplayData PersistentGameplayData { get; private set; }
         public bool PendingStageAdvanceAfterRewards { get; set; }
+        public EventData SelectedMapEventData { get; private set; }
         protected UIManager UIManager => UIManager.Instance;
-        #endregion
-        
-        #region Setup
+
         private void Awake()
         {
             if (Instance)
             {
                 Destroy(gameObject);
                 return;
-               
             }
-            else
-            {
-                transform.parent = null;
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-                CardActionProcessor.Initialize();
-                EnemyActionProcessor.Initialize();
-                RelicEffectProcessor.Initialize();
-                InitGameplayData();
-                SetInitalHand();
-            }
+            transform.parent = null;
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            CardActionProcessor.Initialize();
+            EnemyActionProcessor.Initialize();
+            RelicEffectProcessor.Initialize();
+            InitGameplayData();
+            SetInitalHand();
         }
-        #endregion
-        
-        #region Public Methods
+
         public void InitGameplayData()
-        { 
+        {
             PersistentGameplayData = new PersistentGameplayData(gameplayData);
             PendingStageAdvanceAfterRewards = false;
             var startingNodeId = EncounterData.GetStartingMapNodeId(PersistentGameplayData.CurrentStageId);
-            if (!string.IsNullOrEmpty(startingNodeId))
-                PersistentGameplayData.AvailableMapNodeIds.Add(startingNodeId);
-
+            if (!string.IsNullOrEmpty(startingNodeId)) PersistentGameplayData.AvailableMapNodeIds.Add(startingNodeId);
             GrantStartingRelics();
-
-            if (UIManager)
-                UIManager.InformationCanvas.ResetCanvas();
-           
-        } 
+            if (UIManager) UIManager.InformationCanvas.ResetCanvas();
+        }
 
         public void GrantStartingRelics()
         {
             var ownedRelics = PersistentGameplayData?.CurrentRelicsList;
             if (ownedRelics == null) return;
-
             if (GameplayData && GameplayData.InitialRelics != null)
-            {
                 foreach (var relic in GameplayData.InitialRelics)
-                {
-                    if (relic && !ownedRelics.Exists(x => x && x.RelicId == relic.RelicId))
-                        RelicEffectProcessor.GrantRelic(relic);
-                }
-            }
+                    if (relic && !ownedRelics.Exists(x => x && x.RelicId == relic.RelicId)) RelicEffectProcessor.GrantRelic(relic);
+            if (PersistentGameplayData.AllyList == null) return;
+            foreach (var ally in PersistentGameplayData.AllyList)
+                if (ally && ally.AllyCharacterData && ally.AllyCharacterData.StartingRelics != null)
+                    foreach (var relic in ally.AllyCharacterData.StartingRelics)
+                        if (relic && !ownedRelics.Exists(x => x && x.RelicId == relic.RelicId)) RelicEffectProcessor.GrantRelic(relic);
+        }
 
-            if (PersistentGameplayData.AllyList != null)
-            {
-                foreach (var ally in PersistentGameplayData.AllyList)
-                {
-                    if (ally && ally.AllyCharacterData && ally.AllyCharacterData.StartingRelics != null)
-                    {
-                        foreach (var relic in ally.AllyCharacterData.StartingRelics)
-                        {
-                            if (relic && !ownedRelics.Exists(x => x && x.RelicId == relic.RelicId))
-                                RelicEffectProcessor.GrantRelic(relic);
-                        }
-                    }
-                }
-            }
-        } 
         public CardBase BuildAndGetCard(CardData targetData, Transform parent)
         {
             var clone = Instantiate(GameplayData.CardPrefab, parent);
             clone.SetCard(targetData);
             return clone;
         }
+
         public void SetInitalHand()
         {
             PersistentGameplayData.CurrentCardsList.Clear();
-            
             if (PersistentGameplayData.IsRandomHand)
-                for (var i = 0; i < GameplayData.RandomCardCount; i++)
-                    PersistentGameplayData.CurrentCardsList.Add(GameplayData.AllCardsList.RandomItem());
+                for (var i = 0; i < GameplayData.RandomCardCount; i++) PersistentGameplayData.CurrentCardsList.Add(GameplayData.AllCardsList.RandomItem());
             else
-                foreach (var cardData in GameplayData.InitalDeck.CardList)
-                    PersistentGameplayData.CurrentCardsList.Add(cardData);
+                foreach (var cardData in GameplayData.InitalDeck.CardList) PersistentGameplayData.CurrentCardsList.Add(cardData);
         }
+
         public void NextEncounter()
         {
             PersistentGameplayData.CurrentEncounterId++;
-            if (PersistentGameplayData.CurrentEncounterId>=EncounterData.EnemyEncounterList[PersistentGameplayData.CurrentStageId].EnemyEncounterList.Count)
-            {
-                PersistentGameplayData.CurrentEncounterId = Random.Range(0,
-                    EncounterData.EnemyEncounterList[PersistentGameplayData.CurrentStageId].EnemyEncounterList.Count);
-            }
+            var encounters = EncounterData.EnemyEncounterList[PersistentGameplayData.CurrentStageId].EnemyEncounterList;
+            if (PersistentGameplayData.CurrentEncounterId >= encounters.Count)
+                PersistentGameplayData.CurrentEncounterId = Random.Range(0, encounters.Count);
         }
 
         public bool TryAdvanceToNextStage()
         {
-            if (!EncounterData.TryGetNextStageId(PersistentGameplayData.CurrentStageId, out var nextStageId))
-                return false;
-
+            if (!EncounterData.TryGetNextStageId(PersistentGameplayData.CurrentStageId, out var nextStageId)) return false;
             var startingNodeId = EncounterData.GetStartingMapNodeId(nextStageId);
-            if (string.IsNullOrEmpty(startingNodeId))
-                return false;
-
+            if (string.IsNullOrEmpty(startingNodeId)) return false;
             PersistentGameplayData.CurrentStageId = nextStageId;
             PersistentGameplayData.CurrentEncounterId = 0;
             PersistentGameplayData.IsFinalEncounter = false;
@@ -143,6 +107,7 @@ namespace NueGames.NueDeck.Scripts.Managers
             PersistentGameplayData.CompletedMapNodeIds.Clear();
             PersistentGameplayData.AvailableMapNodeIds.Clear();
             PersistentGameplayData.AvailableMapNodeIds.Add(startingNodeId);
+            SelectedMapEventData = null;
             return true;
         }
 
@@ -153,20 +118,31 @@ namespace NueGames.NueDeck.Scripts.Managers
                 Debug.LogError($"Map node '{nodeId}' is not currently available.", this);
                 return false;
             }
+            if (!EncounterData.TryGetMapNode(PersistentGameplayData.CurrentStageId, nodeId, out var node)) return false;
 
-            if (!EncounterData.TryGetMapNode(PersistentGameplayData.CurrentStageId, nodeId, out var node))
-                return false;
-            if (node.NodeType == EncounterMapNodeType.Shop)
+            SelectedMapEventData = null;
+            switch (node.NodeType)
             {
-                if (!node.ShopContainerData)
-                {
-                    Debug.LogError($"Shop node '{node.NodeId}' has no shop data.", EncounterData);
+                case EncounterMapNodeType.Shop:
+                    if (!node.ShopContainerData) return false;
+                    break;
+                case EncounterMapNodeType.Campfire:
+                case EncounterMapNodeType.Treasure:
+                case EncounterMapNodeType.Event:
+                case EncounterMapNodeType.Unknown:
+                    SelectedMapEventData = EncounterData.ResolveEvent(PersistentGameplayData.CurrentStageId, node);
+                    if (!SelectedMapEventData || SelectedMapEventData.Choices == null || SelectedMapEventData.Choices.Count == 0)
+                    {
+                        Debug.LogError($"Map node '{node.NodeId}' has no valid event choices.", EncounterData);
+                        return false;
+                    }
+                    break;
+                case EncounterMapNodeType.Encounter:
+                case EncounterMapNodeType.Boss:
+                    if (EncounterData.GetEnemyEncounter(PersistentGameplayData.CurrentStageId, node) == null) return false;
+                    break;
+                default:
                     return false;
-                }
-            }
-            else if (EncounterData.GetEnemyEncounter(PersistentGameplayData.CurrentStageId, node) == null)
-            {
-                return false;
             }
 
             PersistentGameplayData.CurrentMapNodeId = node.NodeId;
@@ -185,31 +161,18 @@ namespace NueGames.NueDeck.Scripts.Managers
                 Debug.LogError("Cannot complete the current map node because no valid node is selected.", this);
                 return false;
             }
-
-            if (!progress.CompletedMapNodeIds.Contains(node.NodeId))
-                progress.CompletedMapNodeIds.Add(node.NodeId);
-
+            if (!progress.CompletedMapNodeIds.Contains(node.NodeId)) progress.CompletedMapNodeIds.Add(node.NodeId);
             progress.AvailableMapNodeIds.Clear();
             if (node.NextNodeIds != null)
             {
                 foreach (var nextNodeId in node.NextNodeIds)
-                {
-                    if (!EncounterData.TryGetMapNode(progress.CurrentStageId, nextNodeId, out _))
-                        return false;
-                }
-
+                    if (!EncounterData.TryGetMapNode(progress.CurrentStageId, nextNodeId, out _)) return false;
                 progress.AvailableMapNodeIds.AddRange(node.NextNodeIds);
             }
-
+            SelectedMapEventData = null;
             return true;
         }
 
-        public void OnExitApp()
-        {
-            
-        }
-        #endregion
-      
-
+        public void OnExitApp() { }
     }
 }

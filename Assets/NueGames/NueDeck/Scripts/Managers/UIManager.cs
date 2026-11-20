@@ -12,7 +12,7 @@ namespace NueGames.NueDeck.Scripts.Managers
     [DefaultExecutionOrder(-4)]
     public class UIManager : MonoBehaviour
     {
-        public UIManager() {}
+        public UIManager() { }
         public static UIManager Instance { get; private set; }
 
         [Header("Canvases")]
@@ -23,13 +23,12 @@ namespace NueGames.NueDeck.Scripts.Managers
         [SerializeField] private RelicCanvas relicCanvas;
         [SerializeField] private ShopCanvas shopCanvas;
         [SerializeField] private SelectionCanvas selectionCanvas;
+        [SerializeField] private NodeEventCanvas nodeEventCanvas;
 
         [Header("Fader")]
         [SerializeField] private CanvasGroup fader;
         [SerializeField] private float fadeSpeed = 1f;
 
-
-        #region Cache
         public CombatCanvas CombatCanvas => combatCanvas;
         public InformationCanvas InformationCanvas => informationCanvas;
         public RewardCanvas RewardCanvas => rewardCanvas;
@@ -37,9 +36,8 @@ namespace NueGames.NueDeck.Scripts.Managers
         public RelicCanvas RelicCanvas => relicCanvas;
         public ShopCanvas ShopCanvas => shopCanvas ? shopCanvas : GetComponentInChildren<ShopCanvas>(true);
         public SelectionCanvas SelectionCanvas => selectionCanvas;
-        #endregion
+        public NodeEventCanvas NodeEventCanvas => nodeEventCanvas ? nodeEventCanvas : GetComponentInChildren<NodeEventCanvas>(true);
 
-        #region Setup
         private void Awake()
         {
             if (Instance == null)
@@ -48,64 +46,44 @@ namespace NueGames.NueDeck.Scripts.Managers
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
             }
-            else
-            {
-                Destroy(gameObject);
-            }
-           
+            else Destroy(gameObject);
         }
-        #endregion
 
-        #region Public Methods
+        public void OpenInventory(List<CardData> cardList, string title)
+        {
+            SetCanvas(InventoryCanvas, true, true);
+            InventoryCanvas.ChangeTitle(title);
+            InventoryCanvas.SetCards(cardList);
+        }
 
-        public void OpenInventory(List<CardData> cardList,string title)
+        public void SetCanvas(CanvasBase targetCanvas, bool open, bool reset = false)
         {
-           SetCanvas(InventoryCanvas,true,true);
-           InventoryCanvas.ChangeTitle(title);
-           InventoryCanvas.SetCards(cardList);
+            if (!targetCanvas) return;
+            if (reset) targetCanvas.ResetCanvas();
+            if (open) targetCanvas.OpenCanvas();
+            else targetCanvas.CloseCanvas();
         }
-        
-        public void SetCanvas(CanvasBase targetCanvas,bool open,bool reset = false)
-        {
-            if (reset)
-                targetCanvas.ResetCanvas();
-            
-            if (open)
-                targetCanvas.OpenCanvas();
-            else
-                targetCanvas.CloseCanvas();
-        }
-        public void ChangeScene(int index)
-        {
-            StartCoroutine(ChangeSceneRoutine(index));
-        }
-        #endregion
-        
-        #region Routines
+
+        public void ChangeScene(int index) => StartCoroutine(ChangeSceneRoutine(index));
+
         private IEnumerator ChangeSceneRoutine(int index)
         {
             SceneManager.LoadScene(index);
             yield return StartCoroutine(Fade(false));
         }
-        
+
         public IEnumerator Fade(bool isIn)
         {
+            if (!fader) yield break;
             var waitFrame = new WaitForEndOfFrame();
             var timer = isIn ? 0f : 1f;
-
             while (true)
             {
-                timer += Time.deltaTime* (isIn ? fadeSpeed : -fadeSpeed);
-                
+                timer += Time.deltaTime * (isIn ? fadeSpeed : -fadeSpeed);
                 fader.alpha = timer;
-                
-                if (timer>=1f)  break;
-              
+                if (isIn ? timer >= 1f : timer <= 0f) break;
                 yield return waitFrame;
             }
         }
-
-        #endregion
-       
     }
 }
