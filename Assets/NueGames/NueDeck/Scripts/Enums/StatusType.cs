@@ -9,6 +9,7 @@ namespace NueGames.NueDeck.Scripts.Enums
         Dexterity,
         Stun,
         Weak,
-        Vulnerable
+        Vulnerable,
+        StrengthDown
     }
 }

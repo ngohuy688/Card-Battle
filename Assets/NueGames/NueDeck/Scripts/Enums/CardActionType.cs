@@ -14,6 +14,6 @@
         Exhaust,
         Dispel,
         Purify,
-        
+        DecreaseStrength
     }
 }
