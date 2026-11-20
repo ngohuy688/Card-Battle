@@ -11,6 +11,9 @@
         EarnMana,
         LifeSteal,
         Stun,
-        Exhaust
+        Exhaust,
+        Dispel,
+        Purify,
+        
     }
 }

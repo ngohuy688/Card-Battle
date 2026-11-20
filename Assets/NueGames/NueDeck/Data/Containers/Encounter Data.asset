@@ -41,24 +41,22 @@ MonoBehaviour:
       - {fileID: 11400000, guid: ac6937a4cc8afb94cac0a1ffdf9f72e0, type: 2}
       - {fileID: 11400000, guid: 2a3e3cac54ff7a84a81dc5f60d34fb2b, type: 2}
     mapStartNodeId: demo_start
-    eventPool:
-    - {fileID: 11400000, guid: 2be4f901c48a481d966ece7c433085c3, type: 2}
     mapNodeList:
     - nodeId: demo_start
       displayName: Test Encounter
-      nodeType: 0
+      nodeType: 3
       shopContainerData: {fileID: 0}
-      eventData: {fileID: 0}
+      eventData: {fileID: 11400000, guid: a1b11c0e18e74c97a810e4b98e324401, type: 2}
       encounterIndex: 0
       roomNumber: 1
       position: {x: 0.1, y: 0.5}
       nextNodeIds:
       - demo_unknown
     - nodeId: demo_unknown
-      displayName: ? Unknown Event
-      nodeType: 6
-      shopContainerData: {fileID: 0}
-      eventData: {fileID: 0}
+      displayName: '? Unknown Event'
+      nodeType: 3
+      shopContainerData: {fileID: 11400000, guid: ba1d27464ca94104aec927073d0435e1, type: 2}
+      eventData: {fileID: 11400000, guid: a1b11c0e18e74c97a810e4b98e324401, type: 2}
       encounterIndex: 0
       roomNumber: 2
       position: {x: 0.28, y: 0.5}
@@ -114,6 +112,8 @@ MonoBehaviour:
       roomNumber: 6
       position: {x: 0.95, y: 0.5}
       nextNodeIds: []
+    eventPool:
+    - {fileID: 11400000, guid: 2be4f901c48a481d966ece7c433085c3, type: 2}
   - name: Stage 2
     stageId: 1
     bossEncounterList:
@@ -141,7 +141,6 @@ MonoBehaviour:
       - {fileID: 11400000, guid: ac6937a4cc8afb94cac0a1ffdf9f72e0, type: 2}
       - {fileID: 11400000, guid: 2a3e3cac54ff7a84a81dc5f60d34fb2b, type: 2}
     mapStartNodeId: start
-    eventPool: []
     mapNodeList:
     - nodeId: start
       displayName: Entry
@@ -215,3 +214,4 @@ MonoBehaviour:
       roomNumber: 4
       position: {x: 0.89, y: 0.24}
       nextNodeIds: []
+    eventPool: []

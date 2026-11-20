@@ -73,7 +73,7 @@ namespace NueGames.NueDeck.Editor
             serialized.FindProperty("choicesRoot").objectReferenceValue = choices.transform;
             serialized.FindProperty("choiceButtonPrefab").objectReferenceValue = button;
             serialized.ApplyModifiedPropertiesWithoutUndo();
-            button.gameObject.SetActive(false);
+            button.gameObject.SetActive(true);
             AssignCanvas(uiManager, eventCanvas);
 
             var eventSystem = Object.FindFirstObjectByType<EventSystem>(FindObjectsInactive.Include);
