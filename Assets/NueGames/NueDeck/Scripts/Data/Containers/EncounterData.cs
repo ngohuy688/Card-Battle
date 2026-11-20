@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NueGames.NueDeck.Scripts.Characters;
@@ -12,21 +12,26 @@ namespace NueGames.NueDeck.Scripts.Data.Containers
     [CreateAssetMenu(fileName = "Encounter Data", menuName = "NueDeck/Containers/EncounterData", order = 4)]
     public class EncounterData : ScriptableObject
     {
-        [Header("Settings")] 
+        [Header("Settings")]
         [SerializeField] private bool encounterRandomlyAtStage;
         [SerializeField] private List<EnemyEncounterStage> enemyEncounterList;
 
         public bool EncounterRandomlyAtStage => encounterRandomlyAtStage;
         public List<EnemyEncounterStage> EnemyEncounterList => enemyEncounterList;
 
-        public EnemyEncounter GetEnemyEncounter(int stageId = 0,int encounterId =0,bool isFinal = false)
+        public EnemyEncounter GetEnemyEncounter(int stageId = 0, int encounterId = 0, bool isFinal = false)
         {
-            var selectedStage = EnemyEncounterList.First(x => x.StageId == stageId);
-            if (isFinal) return selectedStage.BossEncounterList.RandomItem();
-           
-            return EncounterRandomlyAtStage
-                ? selectedStage.EnemyEncounterList.RandomItem()
-                : selectedStage.EnemyEncounterList[encounterId] ?? selectedStage.EnemyEncounterList.RandomItem();
+            var stage = EnemyEncounterList?.FirstOrDefault(x => x.StageId == stageId);
+            if (stage == null)
+                return null;
+
+            var encounters = isFinal ? stage.BossEncounterList : stage.EnemyEncounterList;
+            if (encounters == null || encounters.Count == 0)
+                return null;
+
+            return encounterRandomlyAtStage && !isFinal
+                ? encounters.RandomItem()
+                : encounters[Mathf.Clamp(encounterId, 0, encounters.Count - 1)];
         }
 
         public bool TryGetNextStageId(int currentStageId, out int nextStageId)
@@ -110,31 +115,46 @@ namespace NueGames.NueDeck.Scripts.Data.Containers
                     node.Position.x < 0f || node.Position.x > 1f ||
                     node.Position.y < 0f || node.Position.y > 1f)
                 {
-                    Debug.LogError(
-                        $"Map node '{node.NodeId}' has an invalid type or a position outside the normalized 0-1 range.",
-                        this);
+                    Debug.LogError($"Map node '{node.NodeId}' has an invalid type or position.", this);
                     return null;
                 }
 
-                if (node.NodeType == EncounterMapNodeType.Shop)
+                switch (node.NodeType)
                 {
-                    if (!node.ShopContainerData)
-                    {
-                        Debug.LogError($"Shop map node '{node.NodeId}' has no ShopContainerData assigned.", this);
-                        return null;
-                    }
-                }
-                else
-                {
-                    var encounters = node.NodeType == EncounterMapNodeType.Boss
-                        ? stage.BossEncounterList
-                        : stage.EnemyEncounterList;
-                    if (encounters == null || node.EncounterIndex < 0 || node.EncounterIndex >= encounters.Count)
-                    {
-                        Debug.LogError(
-                            $"Map node '{node.NodeId}' references an invalid encounter index for stage {stageId}.", this);
-                        return null;
-                    }
+                    case EncounterMapNodeType.Shop:
+                        if (!node.ShopContainerData)
+                        {
+                            Debug.LogError($"Shop map node '{node.NodeId}' has no ShopContainerData assigned.", this);
+                            return null;
+                        }
+                        break;
+                    case EncounterMapNodeType.Encounter:
+                    case EncounterMapNodeType.Boss:
+                        var encounters = node.NodeType == EncounterMapNodeType.Boss
+                            ? stage.BossEncounterList
+                            : stage.EnemyEncounterList;
+                        if (encounters == null || node.EncounterIndex < 0 || node.EncounterIndex >= encounters.Count)
+                        {
+                            Debug.LogError($"Map node '{node.NodeId}' references an invalid encounter index for stage {stageId}.", this);
+                            return null;
+                        }
+                        break;
+                    case EncounterMapNodeType.Event:
+                    case EncounterMapNodeType.Unknown:
+                        if (!node.EventData && (stage.EventPool == null || stage.EventPool.Count == 0))
+                        {
+                            Debug.LogError($"Map node '{node.NodeId}' needs an EventData or a stage event pool.", this);
+                            return null;
+                        }
+                        break;
+                    case EncounterMapNodeType.Campfire:
+                    case EncounterMapNodeType.Treasure:
+                        if (!node.EventData)
+                        {
+                            Debug.LogError($"Map node '{node.NodeId}' needs an EventData asset to define its choices.", this);
+                            return null;
+                        }
+                        break;
                 }
 
                 if (node.NextNodeIds == null)
@@ -144,9 +164,7 @@ namespace NueGames.NueDeck.Scripts.Data.Containers
                 {
                     if (!nodeIds.Contains(nextNodeId))
                     {
-                        Debug.LogError(
-                            $"Map node '{node.NodeId}' references missing next node '{nextNodeId}' in stage {stageId}.",
-                            this);
+                        Debug.LogError($"Map node '{node.NodeId}' references missing next node '{nextNodeId}' in stage {stageId}.", this);
                         return null;
                     }
                 }
@@ -169,52 +187,47 @@ namespace NueGames.NueDeck.Scripts.Data.Containers
             return mapNode != null;
         }
 
+        public EventData ResolveEvent(int stageId, EncounterMapNode node)
+        {
+            if (node == null)
+                return null;
+            if (node.EventData)
+                return node.EventData;
+
+            if (node.NodeType != EncounterMapNodeType.Event && node.NodeType != EncounterMapNodeType.Unknown)
+                return null;
+
+            var stage = EnemyEncounterList?.FirstOrDefault(x => x.StageId == stageId);
+            var validEvents = stage?.EventPool?.Where(item => item && item.Choices != null && item.Choices.Count > 0).ToList();
+            return validEvents != null && validEvents.Count > 0 ? validEvents.RandomItem() : null;
+        }
+
         public EnemyEncounter GetEnemyEncounter(int stageId, EncounterMapNode mapNode)
         {
-            if (mapNode == null)
-            {
-                Debug.LogError($"Cannot resolve an encounter for a null map node in stage {stageId}.", this);
+            if (mapNode == null ||
+                (mapNode.NodeType != EncounterMapNodeType.Encounter && mapNode.NodeType != EncounterMapNodeType.Boss))
                 return null;
-            }
 
             var stage = EnemyEncounterList?.FirstOrDefault(x => x.StageId == stageId);
             if (stage == null)
-            {
-                Debug.LogError($"Stage ID {stageId} is not configured in EncounterData.", this);
                 return null;
-            }
-
-            if (mapNode.NodeType == EncounterMapNodeType.Shop)
-            {
-                Debug.LogError($"Shop node '{mapNode.NodeId}' does not contain an enemy encounter.", this);
-                return null;
-            }
 
             var encounters = mapNode.NodeType == EncounterMapNodeType.Boss
                 ? stage.BossEncounterList
                 : stage.EnemyEncounterList;
-            if (mapNode.NodeType == EncounterMapNodeType.Encounter && EncounterRandomlyAtStage)
-            {
-                if (encounters != null && encounters.Count > 0)
-                    return encounters.RandomItem();
 
-                Debug.LogError($"Stage {stageId} has no regular encounters configured.", this);
-                return null;
-            }
+            if (mapNode.NodeType == EncounterMapNodeType.Encounter && EncounterRandomlyAtStage)
+                return encounters != null && encounters.Count > 0 ? encounters.RandomItem() : null;
 
             if (encounters == null || mapNode.EncounterIndex < 0 || mapNode.EncounterIndex >= encounters.Count)
             {
-                Debug.LogError(
-                    $"Map node '{mapNode.NodeId}' references encounter index {mapNode.EncounterIndex}, " +
-                    $"which is not configured for stage {stageId}.", this);
+                Debug.LogError($"Map node '{mapNode.NodeId}' references an invalid encounter index for stage {stageId}.", this);
                 return null;
             }
 
             return encounters[mapNode.EncounterIndex];
         }
-        
     }
-
 
     [Serializable]
     public class EnemyEncounterStage
@@ -225,12 +238,15 @@ namespace NueGames.NueDeck.Scripts.Data.Containers
         [SerializeField] private List<EnemyEncounter> enemyEncounterList;
         [SerializeField] private string mapStartNodeId;
         [SerializeField] private List<EncounterMapNode> mapNodeList;
+        [SerializeField] private List<EventData> eventPool;
+
         public string Name => name;
         public int StageId => stageId;
         public List<EnemyEncounter> BossEncounterList => bossEncounterList;
         public List<EnemyEncounter> EnemyEncounterList => enemyEncounterList;
         public string MapStartNodeId => mapStartNodeId;
         public List<EncounterMapNode> MapNodeList => mapNodeList;
+        public List<EventData> EventPool => eventPool;
     }
 
     [Serializable]
@@ -240,6 +256,7 @@ namespace NueGames.NueDeck.Scripts.Data.Containers
         [SerializeField] private string displayName;
         [SerializeField] private EncounterMapNodeType nodeType;
         [SerializeField] private ShopContainerData shopContainerData;
+        [SerializeField] private EventData eventData;
         [SerializeField] private int encounterIndex;
         [SerializeField] private int roomNumber;
         [SerializeField] private Vector2 position;
@@ -249,25 +266,24 @@ namespace NueGames.NueDeck.Scripts.Data.Containers
         public string DisplayName => displayName;
         public EncounterMapNodeType NodeType => nodeType;
         public ShopContainerData ShopContainerData => shopContainerData;
+        public EventData EventData => eventData;
         public int EncounterIndex => encounterIndex;
         public int RoomNumber => roomNumber;
         public Vector2 Position => position;
         public List<string> NextNodeIds => nextNodeIds;
     }
-    
-    
+
     [Serializable]
     public class EnemyEncounter : EncounterBase
     {
         [SerializeField] private List<EnemyCharacterData> enemyList;
         public List<EnemyCharacterData> EnemyList => enemyList;
     }
-    
+
     [Serializable]
     public abstract class EncounterBase
     {
         [SerializeField] private BackgroundTypes targetBackgroundType;
-
         public BackgroundTypes TargetBackgroundType => targetBackgroundType;
     }
 }

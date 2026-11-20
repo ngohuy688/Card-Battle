@@ -1,9 +1,13 @@
 namespace NueGames.NueDeck.Scripts.Enums
-{ 
+{
     public enum EncounterMapNodeType
     {
         Encounter,
         Boss,
-        Shop
+        Shop,
+        Campfire,
+        Treasure,
+        Event,
+        Unknown
     }
 }
