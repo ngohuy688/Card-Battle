@@ -1,5 +1,5 @@
-using NueGames.NueDeck.Scripts.Data.Collection;
 using System.Collections.Generic;
+using NueGames.NueDeck.Scripts.Data.Collection;
 using UnityEngine;
 
 namespace NueGames.NueDeck.Scripts.Data.Containers
@@ -14,7 +14,7 @@ namespace NueGames.NueDeck.Scripts.Data.Containers
     }
 
     [System.Serializable]
-    public class NodeRewardEffect : ScriptableObject
+    public class NodeRewardEffect
     {
         [SerializeField] private NodeRewardEffectType effectType;
         [SerializeField] private int amount;

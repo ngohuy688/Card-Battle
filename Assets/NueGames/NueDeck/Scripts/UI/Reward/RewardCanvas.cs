@@ -89,7 +89,7 @@ namespace NueGames.NueDeck.Scripts.UI.Reward
 
         private void GetGoldReward(RewardContainer rewardContainer, int amount)
         {
-            NodeRewardService.Apply(new NodeRewardEffectProxy(NodeRewardEffectType.GainGold, amount).Effect);
+            NodeRewardService.GainGold(amount);
             _currentRewardsList.Remove(rewardContainer);
             if (rewardContainer) Destroy(rewardContainer.gameObject);
         }
@@ -145,22 +145,6 @@ namespace NueGames.NueDeck.Scripts.UI.Reward
                 _currentRewardsList.Remove(rewardContainer);
             }
             if (rewardContainer) Destroy(rewardContainer.gameObject);
-        }
-
-        // Keeps combat reward gold on the same reward application path as map events.
-        private sealed class NodeRewardEffectProxy
-        {
-            public NodeRewardEffect Effect { get; }
-            public NodeRewardEffectProxy(NodeRewardEffectType type, int amount)
-            {
-                Effect = ScriptableObject.CreateInstance<RuntimeNodeRewardEffect>();
-                ((RuntimeNodeRewardEffect)Effect).Initialize(type, amount);
-            }
-        }
-
-        private sealed class RuntimeNodeRewardEffect : NodeRewardEffect
-        {
-            public void Initialize(NodeRewardEffectType type, int amount) { }
         }
     }
 }

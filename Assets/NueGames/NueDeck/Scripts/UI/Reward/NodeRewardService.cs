@@ -1,4 +1,3 @@
-using NueGames.NueDeck.Scripts.Characters;
 using NueGames.NueDeck.Scripts.Data.Containers;
 using NueGames.NueDeck.Scripts.Enums;
 using NueGames.NueDeck.Scripts.Managers;
@@ -18,12 +17,7 @@ namespace NueGames.NueDeck.Scripts.UI.Reward
             switch (effect.EffectType)
             {
                 case NodeRewardEffectType.GainGold:
-                    if (effect.Amount <= 0) return false;
-                    run.CurrentGold += effect.Amount;
-                    RelicEffectProcessor.Trigger(RelicCondition.OnCoinGained,
-                        new RelicEffectParameters { Value = effect.Amount });
-                    RefreshGold();
-                    return true;
+                    return GainGold(effect.Amount);
                 case NodeRewardEffectType.HealAllAllies:
                     return ApplyHealth(effect.Amount, true);
                 case NodeRewardEffectType.DamageAllAllies:
@@ -37,6 +31,18 @@ namespace NueGames.NueDeck.Scripts.UI.Reward
                 default:
                     return false;
             }
+        }
+
+        public static bool GainGold(int amount)
+        {
+            if (amount <= 0 || !GameManager.Instance || GameManager.Instance.PersistentGameplayData == null)
+                return false;
+
+            GameManager.Instance.PersistentGameplayData.CurrentGold += amount;
+            RelicEffectProcessor.Trigger(RelicCondition.OnCoinGained, new RelicEffectParameters { Value = amount });
+            if (UIManager.Instance && UIManager.Instance.InformationCanvas)
+                UIManager.Instance.InformationCanvas.SetGoldText(GameManager.Instance.PersistentGameplayData.CurrentGold);
+            return true;
         }
 
         private static bool ApplyHealth(int amount, bool heal)
@@ -57,8 +63,8 @@ namespace NueGames.NueDeck.Scripts.UI.Reward
                     run.SetAllyHealthData(id, ally.AllyCharacterData.MaxHealth, ally.AllyCharacterData.MaxHealth);
                     health = run.AllyHealthDataList.Find(item => item.CharacterId == id);
                 }
-
                 if (health == null) continue;
+
                 health.CurrentHealth = heal
                     ? Mathf.Min(health.MaxHealth, health.CurrentHealth + amount)
                     : Mathf.Max(1, health.CurrentHealth - amount);
@@ -68,12 +74,6 @@ namespace NueGames.NueDeck.Scripts.UI.Reward
             if (applied && UIManager.Instance && UIManager.Instance.InformationCanvas)
                 UIManager.Instance.InformationCanvas.ResetCanvas();
             return applied;
-        }
-
-        private static void RefreshGold()
-        {
-            if (UIManager.Instance && UIManager.Instance.InformationCanvas)
-                UIManager.Instance.InformationCanvas.SetGoldText(GameManager.Instance.PersistentGameplayData.CurrentGold);
         }
     }
 }
