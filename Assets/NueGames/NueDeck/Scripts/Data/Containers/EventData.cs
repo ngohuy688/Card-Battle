@@ -40,6 +40,7 @@ namespace NueGames.NueDeck.Scripts.Data.Containers
     }
 
     [CreateAssetMenu(fileName = "Node Event", menuName = "NueDeck/Map/Node Event", order = 5)]
+    [System.Serializable]
     public class EventData : ScriptableObject
     {
         [SerializeField] private string eventTitle;

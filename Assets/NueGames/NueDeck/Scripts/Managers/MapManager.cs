@@ -17,6 +17,7 @@ namespace NueGames.NueDeck.Scripts.Managers
         private GameManager GameManager => GameManager.Instance;
         private UIManager UIManager => UIManager.Instance;
         private RectTransform _nodeRoot;
+        private float _mapBaseWidth;
 
         private void Start() => BuildMap();
 
@@ -38,6 +39,7 @@ namespace NueGames.NueDeck.Scripts.Managers
             var nodes = GameManager.EncounterData.GetMapNodes(GameManager.PersistentGameplayData.CurrentStageId);
             if (nodes == null) return;
             ClearMapRoot();
+            ResizeMapRoot(nodes);
             DrawConnections(nodes);
             BuildNodes(nodes);
             UpdateRoomLabel(nodes);
@@ -60,6 +62,37 @@ namespace NueGames.NueDeck.Scripts.Managers
                 child.gameObject.SetActive(false);
                 Destroy(child.gameObject);
             }
+        }
+
+        private void ResizeMapRoot(List<EncounterMapNode> nodes)
+        {
+            var scrollRect = _nodeRoot.GetComponentInParent<ScrollRect>();
+            var viewport = scrollRect ? scrollRect.viewport : _nodeRoot.parent as RectTransform;
+            var viewportWidth = viewport ? viewport.rect.width : 0f;
+            var canvas = _nodeRoot.GetComponentInParent<Canvas>();
+            var screenWidth = canvas
+                ? Screen.width / Mathf.Max(canvas.scaleFactor, 0.0001f)
+                : Screen.width;
+            var minimumWidth = Mathf.Max(viewportWidth, screenWidth);
+            _mapBaseWidth = minimumWidth;
+            var requiredWidth = GetRequiredContentWidth(
+                nodes.Select(node => node.Position), minimumWidth, 240f);
+
+            _nodeRoot.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, requiredWidth + 200f);
+            _nodeRoot.anchoredPosition = new Vector2(-viewportWidth * 0.5f, _nodeRoot.anchoredPosition.y);
+            if (scrollRect)
+                scrollRect.horizontalNormalizedPosition = 0f;
+        }
+
+        public static float GetRequiredContentWidth(
+            IEnumerable<Vector2> nodePositions, float minimumWidth, float nodeWidth = 240f)
+        {
+            var maxX = 0f;
+            foreach (var position in nodePositions)
+                maxX = Mathf.Max(maxX, position.x);
+
+            var usableWidth = Mathf.Max(0f, minimumWidth - nodeWidth);
+            return Mathf.Max(minimumWidth, nodeWidth + maxX * usableWidth);
         }
 
         private void DrawConnections(List<EncounterMapNode> nodes)
@@ -179,7 +212,9 @@ namespace NueGames.NueDeck.Scripts.Managers
         private Vector2 GetAnchoredPosition(Vector2 position)
         {
             var rect = _nodeRoot.rect;
-            return new Vector2((position.x - 0.5f) * rect.width, (position.y - 0.5f) * rect.height);
+            var usableWidth = Mathf.Max(0f, _mapBaseWidth - 240f);
+            var x = 120f + position.x * usableWidth - rect.width * 0.5f;
+            return new Vector2(x, (position.y - 0.5f) * rect.height);
         }
 
         private void UpdateRoomLabel(List<EncounterMapNode> nodes)

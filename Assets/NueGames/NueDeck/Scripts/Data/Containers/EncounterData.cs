@@ -112,7 +112,8 @@ namespace NueGames.NueDeck.Scripts.Data.Containers
             foreach (var node in stage.MapNodeList)
             {
                 if (!Enum.IsDefined(typeof(EncounterMapNodeType), node.NodeType) ||
-                    node.Position.x < 0f || node.Position.x > 1f ||
+                    float.IsNaN(node.Position.x) || float.IsInfinity(node.Position.x) || node.Position.x < 0f ||
+                    float.IsNaN(node.Position.y) || float.IsInfinity(node.Position.y) ||
                     node.Position.y < 0f || node.Position.y > 1f)
                 {
                     Debug.LogError($"Map node '{node.NodeId}' has an invalid type or position.", this);
