@@ -60,8 +60,11 @@ namespace NueGames.NueDeck.Scripts.Characters
         
         private void SetAllStatus()
         {
-            for (int i = 0; i < Enum.GetNames(typeof(StatusType)).Length; i++)
-                StatusDict.Add((StatusType) i, new StatusStats((StatusType) i, 0));
+            foreach (StatusType statusType in Enum.GetValues(typeof(StatusType)))
+            {
+                if (statusType == StatusType.None) continue;
+                StatusDict.Add(statusType, new StatusStats(statusType, 0));
+            }
 
             StatusDict[StatusType.Poison].DecreaseOverTurn = true;
             StatusDict[StatusType.Poison].OnTriggerAction += DamagePoison;
@@ -98,8 +101,11 @@ namespace NueGames.NueDeck.Scripts.Characters
         }
         public void TriggerAllStatus()
         {
-            for (int i = 0; i < Enum.GetNames(typeof(StatusType)).Length; i++)
-                TriggerStatus((StatusType) i);
+            foreach (StatusType statusType in Enum.GetValues(typeof(StatusType)))
+            {
+                if (statusType == StatusType.None) continue;
+                TriggerStatus(statusType);
+            }
         }
         
         public void SetCurrentHealth(int targetCurrentHealth)

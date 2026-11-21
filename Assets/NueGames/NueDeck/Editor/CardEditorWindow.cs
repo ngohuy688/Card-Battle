@@ -388,9 +388,33 @@ namespace NueGames.NueDeck.Editor
                         descriptionData.EditModifiedActionValueIndex(
                             EditorGUILayout.IntField("Action Index:",clampedIndex));
                        
-                        descriptionData.EditModiferStats((StatusType)EditorGUILayout.EnumPopup("Scale Type:",descriptionData.ModiferStats));
-                        descriptionData.EditUsePrefixOnModifiedValues(EditorGUILayout.ToggleLeft("Use prefix on scale", descriptionData.UsePrefixOnModifiedValue,
-                            GUILayout.Width(125), GUILayout.Height(25)));
+                        // descriptionData.EditModiferStats((StatusType)EditorGUILayout.EnumPopup("Scale Type:",descriptionData.ModiferStats[0]));
+                        // descriptionData.EditUsePrefixOnModifiedValues(EditorGUILayout.ToggleLeft("Use prefix on scale", descriptionData.UsePrefixOnModifiedValue,
+                        //     GUILayout.Width(125), GUILayout.Height(25)));
+                        EditorGUILayout.LabelField("Scale Configuration", EditorStyles.boldLabel);
+                        EditorGUI.indentLevel++;
+
+                        var newModiferStats = (StatusType)EditorGUILayout.EnumFlagsField("Scale Types", descriptionData.ModiferStats);
+                        if (newModiferStats != descriptionData.ModiferStats)
+                            descriptionData.EditModiferStats(newModiferStats);
+
+                        EditorGUI.indentLevel--;
+                        EditorGUILayout.Space();
+
+                        bool currentPrefix = descriptionData.UsePrefixOnModifiedValue;
+                        bool newPrefix = EditorGUILayout.ToggleLeft(
+                            "Use prefix on scale", 
+                            currentPrefix, 
+                            GUILayout.Width(150), 
+                            GUILayout.Height(25)
+                        );
+
+                        if (newPrefix != currentPrefix)
+                        {
+                            descriptionData.EditUsePrefixOnModifiedValues(newPrefix);
+                        }
+
+                            
                         if (descriptionData.UsePrefixOnModifiedValue)
                             descriptionData.EditPrefixOnModifiedValues(
                                 EditorGUILayout.TextField("Prefix:",descriptionData.ModifiedValuePrefix));

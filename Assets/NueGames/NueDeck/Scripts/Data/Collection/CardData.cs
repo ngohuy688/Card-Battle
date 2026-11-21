@@ -171,7 +171,7 @@ namespace NueGames.NueDeck.Scripts.Data.Collection
                
                 if (player)
                 {
-                    modifer = player.CharacterStats.StatusDict[ModiferStats].StatusValue;
+                    modifer = GetTotalModiferValue(player.CharacterStats);
                     value += modifer;
 
                     if (modifer != 0)
@@ -199,6 +199,22 @@ namespace NueGames.NueDeck.Scripts.Data.Collection
             }
             
             return str.ToString();
+        }
+
+        private int GetTotalModiferValue(NueGames.NueDeck.Scripts.Characters.CharacterStats characterStats)
+        {
+            var totalModifer = 0;
+
+            foreach (StatusType statusType in Enum.GetValues(typeof(StatusType)))
+            {
+                if (statusType == StatusType.None) continue;
+                if ((modiferStats & statusType) != statusType) continue;
+                if (!characterStats.StatusDict.TryGetValue(statusType, out var statusStats)) continue;
+
+                totalModifer += statusStats.StatusValue;
+            }
+
+            return totalModifer;
         }
 
         #region Editor
@@ -230,7 +246,7 @@ namespace NueGames.NueDeck.Scripts.Data.Collection
                 var player = CombatManager.CurrentMainAlly;
                 if (player)
                 {
-                    var modifer =player.CharacterStats.StatusDict[ModiferStats].StatusValue;
+                    var modifer = GetTotalModiferValue(player.CharacterStats);
                     value += modifer;
                 
                     if (modifer!= 0)

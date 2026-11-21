@@ -1,14 +1,15 @@
 namespace NueGames.NueDeck.Scripts.Enums
 {
+    [System.Flags]
     public enum StatusType
     {
         None = 0,
-        Block,
-        Poison,
-        Strength,
-        Dexterity,
-        Stun,
-        Weak,
-        Vulnerable
+        Block = 1 << 0,
+        Poison = 1 << 1,
+        Strength = 1 << 2,
+        Dexterity = 1 << 3,
+        Stun = 1 << 4,
+        Weak = 1 << 5,
+        Vulnerable = 1 << 6
     }
 }
