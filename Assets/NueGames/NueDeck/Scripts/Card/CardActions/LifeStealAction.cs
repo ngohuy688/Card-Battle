@@ -1,4 +1,4 @@
-﻿using NueGames.NueDeck.Scripts.Characters;
+using NueGames.NueDeck.Scripts.Characters;
 using NueGames.NueDeck.Scripts.Enums;
 using NueGames.NueDeck.Scripts.Managers;
 using NueGames.NueDeck.Scripts.Relic;
@@ -9,12 +9,12 @@ namespace NueGames.NueDeck.Scripts.Card.CardActions
     public class LifeStealAction : CardActionBase
     {
         public override CardActionType ActionType => CardActionType.LifeSteal;
+
         public override void DoAction(CardActionParameters actionParameters)
         {
             if (!actionParameters.TargetCharacter) return;
 
-            var value = actionParameters.Value +
-                        actionParameters.SelfCharacter.CharacterStats.StatusDict[StatusType.Strength].StatusValue;
+            var value = Mathf.Max(0, actionParameters.Value + actionParameters.SelfCharacter.CharacterStats.StrengthModifier);
             if (actionParameters.SelfCharacter is AllyBase)
             {
                 var damageParameters = new RelicEffectParameters
@@ -39,6 +39,7 @@ namespace NueGames.NueDeck.Scripts.Card.CardActions
                         TargetCharacter = actionParameters.TargetCharacter,
                         CardData = actionParameters.CardData
                     });
+
             var previousHealth = actionParameters.SelfCharacter.CharacterStats.CurrentHealth;
             actionParameters.SelfCharacter.CharacterStats.Heal(roundedValue);
             var restoredHealth = actionParameters.SelfCharacter.CharacterStats.CurrentHealth - previousHealth;
@@ -51,15 +52,15 @@ namespace NueGames.NueDeck.Scripts.Card.CardActions
                         TargetCharacter = actionParameters.SelfCharacter,
                         CardData = actionParameters.CardData
                     });
-            
+
             if (FxManager != null)
             {
-                FxManager.PlayFx(actionParameters.TargetCharacter.transform,FxType.Attack);
-                FxManager.PlayFx(actionParameters.SelfCharacter.transform,FxType.Heal);
-                FxManager.SpawnFloatingText(actionParameters.TargetCharacter.TextSpawnRoot,value.ToString());
+                FxManager.PlayFx(actionParameters.TargetCharacter.transform, FxType.Attack);
+                FxManager.PlayFx(actionParameters.SelfCharacter.transform, FxType.Heal);
+                FxManager.SpawnFloatingText(actionParameters.TargetCharacter.TextSpawnRoot, value.ToString());
             }
-           
-            if (AudioManager != null) 
+
+            if (AudioManager != null)
                 AudioManager.PlayOneShot(actionParameters.CardData.AudioType);
         }
     }

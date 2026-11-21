@@ -10,6 +10,7 @@ namespace NueGames.NueDeck.Scripts.Enums
         Dexterity = 1 << 3,
         Stun = 1 << 4,
         Weak = 1 << 5,
-        Vulnerable = 1 << 6
+        Vulnerable = 1 << 6,
+        StrengthDown = 1 << 7
     }
 }
