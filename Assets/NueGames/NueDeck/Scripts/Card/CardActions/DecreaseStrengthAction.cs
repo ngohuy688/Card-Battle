@@ -24,7 +24,7 @@ namespace NueGames.NueDeck.Scripts.Card.CardActions
             if (FxManager != null)
                 FxManager.PlayFx(target.transform, FxType.Buff);
 
-            if (AudioManager != null)
+            if (AudioManager != null && actionParameters.CardData != null)
                 AudioManager.PlayOneShot(actionParameters.CardData.AudioType);
         }
     }

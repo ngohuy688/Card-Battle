@@ -45,9 +45,13 @@ namespace NueGames.NueDeck.Scripts.Characters
         public void InitCanvas()
         {
             highlightRoot.gameObject.SetActive(false);
-            
-            for (int i = 0; i < Enum.GetNames(typeof(StatusType)).Length; i++)
-                StatusDict.Add((StatusType) i, null);
+
+            foreach (StatusType statusType in Enum.GetValues(typeof(StatusType)))
+            {
+                if (statusType == StatusType.None) continue;
+                if ((statusType & (statusType - 1)) != 0) continue; // skip combined flags
+                StatusDict.Add(statusType, null);
+            }
 
             TargetCanvas = GetComponent<Canvas>();
 

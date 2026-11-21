@@ -18,7 +18,7 @@ MonoBehaviour:
   cardSprite: {fileID: 21300000, guid: c0629e7c358247d4291114d4e9521ddd, type: 3}
   usableWithoutTarget: 1
   cardActionDataList:
-  - cardActionType: 6
+  - cardActionType: 7
     actionTargetType: 1
     actionValue: 2
     actionDelay: 0

@@ -62,15 +62,18 @@ namespace NueGames.NueDeck.Scripts.Characters
 
         private void SetAllStatus()
         {
-            for (int i = 0; i < Enum.GetNames(typeof(StatusType)).Length; i++)
-                StatusDict.Add((StatusType)i, new StatusStats((StatusType)i, 0));
+            foreach (StatusType statusType in Enum.GetValues(typeof(StatusType)))
+            {
+                if (statusType == StatusType.None) continue;
+                if ((statusType & (statusType - 1)) != 0) continue; // skip combined flags
+                StatusDict.Add(statusType, new StatusStats(statusType, 0));
+            }
 
             StatusDict[StatusType.Poison].DecreaseOverTurn = true;
             StatusDict[StatusType.Poison].OnTriggerAction += DamagePoison;
 
             StatusDict[StatusType.Block].ClearAtNextTurn = true;
 
-            StatusDict[StatusType.Strength].CanNegativeStack = true;
             StatusDict[StatusType.Dexterity].CanNegativeStack = true;
 
             StatusDict[StatusType.Stun].DecreaseOverTurn = true;
@@ -78,6 +81,9 @@ namespace NueGames.NueDeck.Scripts.Characters
 
             StatusDict[StatusType.Weak].DecreaseOverTurn = true;
             StatusDict[StatusType.Vulnerable].DecreaseOverTurn = true;
+
+            // Strength reduction is represented by StrengthDown status.
+            StatusDict[StatusType.StrengthDown].CanNegativeStack = false;
         }
         #endregion
 
@@ -99,8 +105,13 @@ namespace NueGames.NueDeck.Scripts.Characters
 
         public void TriggerAllStatus()
         {
-            for (int i = 0; i < Enum.GetNames(typeof(StatusType)).Length; i++)
-                TriggerStatus((StatusType)i);
+            foreach (StatusType statusType in Enum.GetValues(typeof(StatusType)))
+            {
+                if (statusType == StatusType.None) continue;
+                if ((statusType & (statusType - 1)) != 0) continue;
+                if (!StatusDict.ContainsKey(statusType)) continue;
+                TriggerStatus(statusType);
+            }
         }
 
         public void SetCurrentHealth(int targetCurrentHealth)
@@ -162,8 +173,9 @@ namespace NueGames.NueDeck.Scripts.Characters
 
         public void ClearAllStatus()
         {
-            foreach (var status in StatusDict)
-                ClearStatus(status.Key);
+            var keys = StatusDict.Keys.ToList();
+            foreach (var status in keys)
+                ClearStatus(status);
         }
 
         public void ClearStatus(StatusType targetStatus)
