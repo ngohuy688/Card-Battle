@@ -6,6 +6,7 @@
         Heal,
         Block,
         IncreaseStrength,
+        DecreaseStrength,
         IncreaseMaxHealth,
         Draw,
         EarnMana,
@@ -14,6 +15,5 @@
         Exhaust,
         Dispel,
         Purify,
-        DecreaseStrength
     }
 }
