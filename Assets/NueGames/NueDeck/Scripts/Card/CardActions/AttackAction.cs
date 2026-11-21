@@ -1,28 +1,29 @@
 using NueGames.NueDeck.Scripts.Characters;
-﻿using NueGames.NueDeck.Scripts.Enums;
+using NueGames.NueDeck.Scripts.Enums;
 using NueGames.NueDeck.Scripts.Managers;
 using NueGames.NueDeck.Scripts.Relic;
 using UnityEngine;
 
 namespace NueGames.NueDeck.Scripts.Card.CardActions
 {
-    public class AttackAction: CardActionBase
+    public class AttackAction : CardActionBase
     {
         public override CardActionType ActionType => CardActionType.Attack;
+
         public override void DoAction(CardActionParameters actionParameters)
         {
             if (!actionParameters.TargetCharacter) return;
-            
+
             var targetCharacter = actionParameters.TargetCharacter;
             var selfCharacter = actionParameters.SelfCharacter;
-            
-            var value = actionParameters.Value + selfCharacter.CharacterStats.StatusDict[StatusType.Strength].StatusValue;
+            var value = Mathf.Max(0, actionParameters.Value + selfCharacter.CharacterStats.StrengthModifier);
 
             if (selfCharacter.CharacterStats.StatusDict[StatusType.Weak].StatusValue > 0)
                 value = Mathf.RoundToInt(value * 0.75f);
 
             if (targetCharacter.CharacterStats.StatusDict[StatusType.Vulnerable].StatusValue > 0)
                 value = Mathf.RoundToInt(value * 1.5f);
+
             if (selfCharacter is AllyBase)
             {
                 var damageParameters = new RelicEffectParameters
@@ -35,7 +36,7 @@ namespace NueGames.NueDeck.Scripts.Card.CardActions
                 RelicEffectProcessor.Trigger(RelicCondition.OnDamageDealt, damageParameters);
                 value = damageParameters.Value;
             }
-            
+
             targetCharacter.CharacterStats.Damage(Mathf.RoundToInt(value));
             if (targetCharacter is AllyBase)
                 RelicEffectProcessor.Trigger(RelicCondition.OnDamageTaken,
@@ -49,11 +50,11 @@ namespace NueGames.NueDeck.Scripts.Card.CardActions
 
             if (FxManager != null)
             {
-                FxManager.PlayFx(actionParameters.TargetCharacter.transform,FxType.Attack);
-                FxManager.SpawnFloatingText(actionParameters.TargetCharacter.TextSpawnRoot,value.ToString());
+                FxManager.PlayFx(targetCharacter.transform, FxType.Attack);
+                FxManager.SpawnFloatingText(targetCharacter.TextSpawnRoot, value.ToString());
             }
-           
-            if (AudioManager != null) 
+
+            if (AudioManager != null)
                 AudioManager.PlayOneShot(actionParameters.CardData.AudioType);
         }
     }
