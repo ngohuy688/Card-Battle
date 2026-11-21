@@ -181,6 +181,7 @@ namespace NueGames.NueDeck.Editor
             if (!SelectedCardData)
             {
                 EditorGUILayout.LabelField("Select card");
+                EditorGUILayout.EndVertical();
                 return;
             }
             GUILayout.Space(10);

@@ -16,9 +16,11 @@ MonoBehaviour:
   cardName: Increase strength
   manaCost: 2
   cardSprite: {fileID: 21300000, guid: a0c75614ede963a46af4bc352b3faabd, type: 3}
+  rarity: 0
   usableWithoutTarget: 1
+  exhaustAfterPlay: 0
   cardActionDataList:
-  - cardActionType: 3
+  - cardActionType: 4
     actionTargetType: 1
     actionValue: 4
     actionDelay: 0

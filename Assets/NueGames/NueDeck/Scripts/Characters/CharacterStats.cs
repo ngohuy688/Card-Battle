@@ -34,7 +34,7 @@ namespace NueGames.NueDeck.Scripts.Characters
         public int CurrentHealth { get; set; }
         public bool IsStunned { get; set; }
         public bool IsDeath { get; private set; }
-        public int StrengthModifier => StatusDict[StatusType.Strength].StatusValue - StatusDict[StatusType.StrengthDown].StatusValue;
+        public int StrengthModifier => StatusDict[StatusType.Strength].StatusValue + StatusDict[StatusType.StrengthDown].StatusValue;
 
         public Action OnDeath;
         public Action<int, int> OnHealthChanged;
@@ -82,8 +82,7 @@ namespace NueGames.NueDeck.Scripts.Characters
             StatusDict[StatusType.Weak].DecreaseOverTurn = true;
             StatusDict[StatusType.Vulnerable].DecreaseOverTurn = true;
 
-            // Strength reduction is represented by StrengthDown status.
-            StatusDict[StatusType.StrengthDown].CanNegativeStack = false;
+            StatusDict[StatusType.StrengthDown].DecreaseOverTurn = true;
         }
         #endregion
 

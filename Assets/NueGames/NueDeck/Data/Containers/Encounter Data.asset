@@ -44,7 +44,7 @@ MonoBehaviour:
     mapNodeList:
     - nodeId: demo_start
       displayName: Test Encounter
-      nodeType: 3
+      nodeType: 0
       shopContainerData: {fileID: 0}
       eventData: {fileID: 11400000, guid: a1b11c0e18e74c97a810e4b98e324401, type: 2}
       encounterIndex: 0

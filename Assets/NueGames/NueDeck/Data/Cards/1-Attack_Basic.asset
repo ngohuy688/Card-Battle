@@ -22,7 +22,7 @@ MonoBehaviour:
   cardActionDataList:
   - cardActionType: 0
     actionTargetType: 0
-    actionValue: 100
+    actionValue: 10
     actionDelay: 0
   cardDescriptionDataList:
   - descriptionText: 'Deal '
@@ -39,7 +39,7 @@ MonoBehaviour:
     overrideColor: {r: 0.7686275, g: 0.14117648, b: 0.18823531, a: 1}
     useModifier: 1
     modifiedActionValueIndex: 0
-    modiferStats: 8
+    modiferStats: 132
     usePrefixOnModifiedValue: 1
     modifiedValuePrefix: '*'
     overrideColorOnValueScaled: 1
