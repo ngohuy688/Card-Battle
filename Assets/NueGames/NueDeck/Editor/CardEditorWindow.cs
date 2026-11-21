@@ -174,6 +174,7 @@ namespace NueGames.NueDeck.Editor
             CacheCardData();
         }
 
+        [Obsolete]
         private void DrawSelectedCard()
         {
             EditorGUILayout.BeginVertical("box", GUILayout.ExpandHeight(true));
@@ -230,6 +231,8 @@ namespace NueGames.NueDeck.Editor
         { 
             CardRarity = (RarityType) EditorGUILayout.EnumPopup("Rarity: ",CardRarity,GUILayout.Width(250));
         }
+
+        [Obsolete]
         private void ChangeCardSprite()
         {
             EditorGUILayout.BeginHorizontal();
@@ -249,6 +252,8 @@ namespace NueGames.NueDeck.Editor
         
         private bool _isGeneralSettingsFolded;
         private Vector2 _generalSettingsScrollPos;
+
+        [Obsolete]
         private void ChangeGeneralSettings()
         {
             _isGeneralSettingsFolded =EditorGUILayout.BeginFoldoutHeaderGroup(_isGeneralSettingsFolded, "General Settings");
