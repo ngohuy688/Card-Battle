@@ -12,8 +12,7 @@
         LifeSteal,
         Stun,
         Exhaust,
-        Dispel,
-        Purify,
-        
+        Dispel,//xóa bỏ mọi hiệu ứng có lợi
+        Purify,//xóa bỏ mọi hiệu ứng có hại
     }
 }
